@@ -5,10 +5,19 @@ router = APIRouter()
 
 @router.get("/game_info/{game_name}")
 def get_game_info(game_name: str):
-    # Implement your logic to fetch game information from Steam
-    # Here is an example using a hypothetical API
-    url = f"https://api.steampowered.com/.../get_game_details?name={game_name}"
-    response = requests.get(url)
-    if response.status_code != 200:
-        raise HTTPException(status_code=response.status_code, detail="Error fetching game details")
-    return response.json()
+    # URL de ejemplo para la API de Steam
+    url = f"https://store.steampowered.com/api/appdetails?appids={game_name}"
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Levantar una excepción para errores HTTP
+    except requests.exceptions.HTTPError as http_err:
+        raise HTTPException(status_code=response.status_code, detail=str(http_err))
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=str(err))
+
+    data = response.json()
+    if not data or game_name not in data or not data[game_name]['success']:
+        raise HTTPException(status_code=404, detail="Game not found or data unavailable")
+
+    return data[game_name]['data']
