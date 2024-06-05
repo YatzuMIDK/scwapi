@@ -3,5 +3,5 @@ uvicorn
 requests
 psutil
 Pillow
-TikTokApi
+beautifulsoup4
 wikipedia-api
