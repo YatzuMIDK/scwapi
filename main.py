@@ -1,9 +1,11 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from datetime import datetime
 from connect4.routers import router as connect4_router
 from steam.routers import router as steam_router
 import uvicorn
+import time
+import psutil
 
 app = FastAPI()
 
@@ -14,8 +16,16 @@ start_time = datetime.utcnow()
 app.include_router(connect4_router, prefix="/connect4", tags=["Connect4"])
 app.include_router(steam_router, prefix="/steam", tags=["Steam"])
 
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = str(process_time * 1000)  # Convertir a milisegundos
+    return response
+
 @app.get("/")
-async def root():
+async def root(request: Request):
     current_time = datetime.utcnow()
     uptime = current_time - start_time
     uptime_str = str(uptime).split(".")[0]  # Eliminar microsegundos para una mejor presentación
@@ -26,7 +36,21 @@ async def root():
         if hasattr(route, "path"):
             routes.append(route.path)
 
-    return JSONResponse(content={"uptime": uptime_str, "endpoints": routes})
+    # Obtener la latencia de la solicitud actual en milisegundos
+    process_time = request.headers.get("X-Process-Time", "unknown")
+
+    # Obtener el uso de CPU y RAM
+    cpu_usage = psutil.cpu_percent(interval=1)
+    memory_info = psutil.virtual_memory()
+    ram_usage = memory_info.percent
+
+    return JSONResponse(content={
+        "uptime": uptime_str,
+        "endpoints": routes,
+        "latency_ms": process_time,
+        "cpu_usage_percent": cpu_usage,
+        "ram_usage_percent": ram_usage
+    })
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
