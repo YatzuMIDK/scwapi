@@ -33,8 +33,6 @@ async def root(request: Request):
     # Obtener todas las rutas disponibles
     routes = [route.path for route in app.routes if hasattr(route, "path")]
 
-    # Obtener la latencia de la solicitud actual en segundos
-    process_time = request.headers.get("X-Process-Time", "unknown")
 
     # Obtener el uso de CPU y RAM
     cpu_usage = psutil.cpu_percent(interval=1)
@@ -44,7 +42,6 @@ async def root(request: Request):
     return JSONResponse(content={
         "uptime": uptime_str,
         "endpoints": routes,
-        "latency_seconds": process_time,
         "cpu_usage_percent": cpu_usage,
         "ram_usage_percent": ram_usage
     })
