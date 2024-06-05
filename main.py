@@ -1,9 +1,11 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from datetime import datetime
-from connect4.routers import router as connect4_router
-from steam.routers import router as steam_router
-from tiktok.routers import router as tiktok_router
+from connect4 import router as connect4_router
+from steam import router as steam_router
+from tiktok import router as tiktok_router
+from name_combiner import router as name_combiner_router
+from cheems import router as cheems_router
 import uvicorn
 import time
 import psutil
@@ -13,10 +15,12 @@ app = FastAPI()
 # Registrar la hora de inicio
 start_time = datetime.utcnow()
 
-# Incluir los routers de Connect4, Steam y TikTok
+# Incluir los routers de Connect4, Steam, TikTok, Name Combiner y Cheems
 app.include_router(connect4_router, prefix="/connect4", tags=["Connect4"])
 app.include_router(steam_router, prefix="/steam", tags=["Steam"])
 app.include_router(tiktok_router, prefix="/tiktok", tags=["TikTok"])
+app.include_router(name_combiner_router, prefix="/name_combiner", tags=["NameCombiner"])
+app.include_router(cheems_router, prefix="/cheems", tags=["Cheems"])
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
@@ -38,17 +42,17 @@ async def root(request: Request):
     # Obtener la latencia de la solicitud actual en segundos
     process_time = request.headers.get("X-Process-Time", "unknown")
 
-    # Obtener el uso de CPU y RAM
-    cpu_usage = psutil.cpu_percent(interval=1)
-    memory_info = psutil.virtual_memory()
-    ram_usage = memory_info.percent
+    # Obtener el uso de CPU y RAM en MB
+    process = psutil.Process()
+    cpu_usage = process.cpu_percent(interval=1)
+    ram_usage = process.memory_info().rss / (1024 ** 2)  # Convertir bytes a MB
 
     return JSONResponse(content={
         "uptime": uptime_str,
         "endpoints": routes,
         "latency_seconds": process_time,
         "cpu_usage_percent": cpu_usage,
-        "ram_usage_percent": ram_usage
+        "ram_usage_mb": ram_usage
     })
 
 if __name__ == "__main__":
