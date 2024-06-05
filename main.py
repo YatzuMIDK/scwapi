@@ -20,8 +20,8 @@ app.include_router(steam_router, prefix="/steam", tags=["Steam"])
 async def add_process_time_header(request: Request, call_next):
     start_time = time.time()
     response = await call_next(request)
-    process_time = time.time() - start_time
-    response.headers["X-Process-Time"] = str(process_time * 1000)  # Convertir a milisegundos
+    process_time = (time.time() - start_time) * 1000  # Convertir a milisegundos
+    response.headers["X-Process-Time"] = str(process_time)
     return response
 
 @app.get("/")
@@ -31,13 +31,12 @@ async def root(request: Request):
     uptime_str = str(uptime).split(".")[0]  # Eliminar microsegundos para una mejor presentación
 
     # Obtener todas las rutas disponibles
-    routes = []
-    for route in app.routes:
-        if hasattr(route, "path"):
-            routes.append(route.path)
+    routes = [route.path for route in app.routes if hasattr(route, "path")]
 
     # Obtener la latencia de la solicitud actual en milisegundos
     process_time = request.headers.get("X-Process-Time", "unknown")
+    if process_time != "unknown":
+        process_time = float(process_time)
 
     # Obtener el uso de CPU y RAM
     cpu_usage = psutil.cpu_percent(interval=1)
