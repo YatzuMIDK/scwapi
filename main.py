@@ -6,6 +6,7 @@ from steam.router import router as steam_router
 from tiktok.router import router as tiktok_router
 from name_combiner.router import router as name_combiner_router
 from cheems.router import router as cheems_router
+from wiki.router import router as wiki_router
 import uvicorn
 import time
 import psutil
