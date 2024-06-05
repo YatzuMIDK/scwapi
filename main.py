@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from datetime import datetime
-from connect4 import router as connect4_router
-from steam import router as steam_router
-from tiktok import router as tiktok_router
-from name_combiner import router as name_combiner_router
-from cheems import router as cheems_router
+from connect4.router import router as connect4_router
+from steam.router import router as steam_router
+from tiktok.router import router as tiktok_router
+from name_combiner.router import router as name_combiner_router
+from cheems.router import router as cheems_router
 import uvicorn
 import time
 import psutil
