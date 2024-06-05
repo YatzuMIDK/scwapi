@@ -21,8 +21,8 @@ def get_game_info(game_name: str):
     except Exception as err:
         raise HTTPException(status_code=500, detail=str(err))
 
-    # Obtener los detalles del juego usando el app ID
-    details_url = f"https://store.steampowered.com/api/appdetails?appids={app_id}"
+    # Obtener los detalles del juego usando el app ID, con idioma español
+    details_url = f"https://store.steampowered.com/api/appdetails?appids={app_id}&l=spanish"
     try:
         details_response = requests.get(details_url)
         details_response.raise_for_status()
