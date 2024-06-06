@@ -46,7 +46,7 @@ async def root(request: Request):
 
     # Obtener el uso de CPU y RAM en MB
     process = psutil.Process()
-    cpu_usage = process.cpu_percent(interval=1)
+    cpu_usage = psutil.cpu_percent(interval=1)
     ram_usage = process.memory_info().rss / (1024 ** 2)  # Convertir bytes a MB
 
     return JSONResponse(content={
