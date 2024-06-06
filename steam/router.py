@@ -1,88 +1,43 @@
 from fastapi import APIRouter, HTTPException
 import requests
-from bs4 import BeautifulSoup
-import time
 
 router = APIRouter()
 
-STEAM_API_URL = "https://store.steampowered.com/api/appdetails"
+@router.get("/game/{game_name}")
+def get_steam_game_info(game_name: str):
+    try:
+        # Buscar el juego en Steam para obtener su AppID
+        search_url = f"https://store.steampowered.com/api/storesearch/?term={game_name}&l=english"
+        search_response = requests.get(search_url)
+        search_data = search_response.json()
+        
+        if not search_data['items']:
+            raise HTTPException(status_code=404, detail="Game not found")
+        
+        appid = search_data['items'][0]['id']
+        
+        # Obtener detalles del juego usando AppID
+        details_url = f"https://store.steampowered.com/api/appdetails?appids={appid}&l=spanish"
+        details_response = requests.get(details_url)
+        details_data = details_response.json()
+        
+        if not details_data[str(appid)]['success']:
+            raise HTTPException(status_code=404, detail="Game details not found")
 
-def get_game_details(appid: int):
-    response = requests.get(STEAM_API_URL, params={"appids": appid})
-    if response.status_code != 200:
-        raise HTTPException(status_code=response.status_code, detail="Error fetching data from Steam API")
+        game_details = details_data[str(appid)]['data']
+        
+        # Extraer los datos requeridos
+        game_info = {
+            "titulo": game_details.get('name', 'N/A'),
+            "web_del_producto": game_details.get('website', 'N/A'),
+            "precio": game_details.get('price_overview', {}).get('final_formatted', 'Free') if game_details.get('is_free') is not True else 'Free',
+            "descripcion": game_details.get('short_description', 'N/A'),
+            "desarrollador": ", ".join(game_details.get('developers', ['N/A'])),
+            "editor": ", ".join(game_details.get('publishers', ['N/A'])),
+            "imagen": game_details.get('header_image', 'N/A')
+        }
+        
+        return game_info
     
-    data = response.json()
-    if not data[str(appid)]["success"]:
-        raise HTTPException(status_code=404, detail="Game not found")
-
-    return data[str(appid)]["data"]
-
-def search_game_id(game_name: str):
-    search_url = f"https://store.steampowered.com/search/?term={game_name}"
-    response = requests.get(search_url)
-    if response.status_code != 200:
-        raise HTTPException(status_code=response.status_code, detail="Error searching for game")
-    
-    soup = BeautifulSoup(response.text, 'html.parser')
-    result = soup.find('a', class_='search_result_row')
-    
-    if result:
-        game_url = result['href']
-        appid = game_url.split('/')[-2]
-        return int(appid)
-    else:
-        raise HTTPException(status_code=404, detail="Game not found")
-
-@router.get("/game/{appid}")
-def get_game_info(appid: int):
-    start_time = time.time()
-    
-    game_data = get_game_details(appid)
-    
-    end_time = time.time()
-    latency = end_time - start_time
-
-    title = game_data.get("name")
-    url = f"https://store.steampowered.com/app/{appid}"
-    price_overview = game_data.get("price_overview", {})
-    price = price_overview.get("final_formatted", "Free")
-    description = game_data.get("detailed_description")
-    developer = ", ".join(game_data.get("developers", []))
-    publisher = ", ".join(game_data.get("publishers", []))
-    image = game_data.get("header_image")
-    
-    release_date = game_data.get("release_date", {}).get("date")
-    if release_date:
-        try:
-            release_timestamp = int(time.mktime(time.strptime(release_date, "%d %b, %Y")))
-        except ValueError:
-            release_timestamp = "Unknown"
-    else:
-        release_timestamp = "Unknown"
-
-    size = game_data.get("size", "Unknown")
-    if size != "Unknown":
-        size_in_mb = float(size) / (1024 * 1024)
-    else:
-        size_in_mb = "Unknown"
-
-    description_es = description
-
-    return {
-        "title": title,
-        "product_url": url,
-        "price": price,
-        "description_es": description_es,
-        "developer": developer,
-        "publisher": publisher,
-        "image": image,
-        "release_date_unix": release_timestamp,
-        "size_mb": size_in_mb,
-        "latency_ms": latency * 1000
-    }
-
-@router.get("/search/{game_name}")
-def search_game(game_name: str):
-    appid = search_game_id(game_name)
-    return get_game_info(appid)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error fetching game details: " + str(e))
