@@ -3,36 +3,41 @@ import requests
 
 router = APIRouter()
 
-@router.get("/game_info/{game_name}")
-def get_game_info(game_name: str):
-    # Buscar el app ID usando el nombre del juego
-    search_url = f"https://store.steampowered.com/api/storesearch/?term={game_name}&cc=us"
+@router.get("/game/{game_name}")
+def get_steam_game_info(game_name: str):
     try:
+        # Buscar el juego en Steam para obtener su AppID
+        search_url = f"https://store.steampowered.com/api/storesearch/?term={game_name}&cc=mx"
         search_response = requests.get(search_url)
-        search_response.raise_for_status()
         search_data = search_response.json()
         
         if not search_data['items']:
             raise HTTPException(status_code=404, detail="Game not found")
         
-        app_id = search_data['items'][0]['id']
-    except requests.exceptions.HTTPError as http_err:
-        raise HTTPException(status_code=search_response.status_code, detail=str(http_err))
-    except Exception as err:
-        raise HTTPException(status_code=500, detail=str(err))
-
-    # Obtener los detalles del juego usando el app ID, con idioma español
-    details_url = f"https://store.steampowered.com/api/appdetails?appids={app_id}&l=spanish"
-    try:
+        appid = search_data['items'][0]['id']
+        
+        # Obtener detalles del juego usando AppID
+        details_url = f"https://store.steampowered.com/api/appdetails?appids={appid}&l=spanish"
         details_response = requests.get(details_url)
-        details_response.raise_for_status()
         details_data = details_response.json()
         
-        if not details_data[str(app_id)]['success']:
-            raise HTTPException(status_code=404, detail="Game details not found or data unavailable")
+        if not details_data[str(appid)]['success']:
+            raise HTTPException(status_code=404, detail="Game details not found")
+
+        game_details = details_data[str(appid)]['data']
         
-        return details_data[str(app_id)]['data']
-    except requests.exceptions.HTTPError as http_err:
-        raise HTTPException(status_code=details_response.status_code, detail=str(http_err))
-    except Exception as err:
-        raise HTTPException(status_code=500, detail=str(err))
+        # Extraer los datos requeridos
+        game_info = {
+            "titulo": game_details.get('name', 'N/A'),
+            "web_del_producto": game_details.get('website', 'N/A'),
+            "precio": game_details.get('price_overview', {}).get('final_formatted', 'Free') if game_details.get('is_free') is not True else 'Free',
+            "descripcion": game_details.get('short_description', 'N/A'),
+            "desarrollador": ", ".join(game_details.get('developers', ['N/A'])),
+            "editor": ", ".join(game_details.get('publishers', ['N/A'])),
+            "imagen": game_details.get('header_image', 'N/A')
+        }
+        
+        return game_info
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error fetching game details: " + str(e))
