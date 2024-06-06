@@ -8,6 +8,7 @@ from name_combiner.router import router as name_combiner_router
 from cheems.router import router as cheems_router
 from wiki.router import router as wiki_router
 from img.router import router as img_router
+from rbx.router import router as rbx_router
 import uvicorn
 import time
 import psutil
