@@ -51,7 +51,7 @@ async def root(request: Request):
 
     return JSONResponse(content={
         "uptime": uptime_str,
-        "endpoints": routes,
+        "dev": "@schwift.alv",
         "latency_seconds": process_time,
         "cpu_usage_percent": cpu_usage,
         "ram_usage_mb": ram_usage
