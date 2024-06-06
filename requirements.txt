@@ -5,3 +5,4 @@ psutil
 Pillow
 beautifulsoup4
 wikipedia-api
+httpx
