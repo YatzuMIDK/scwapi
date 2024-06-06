@@ -1,12 +1,12 @@
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
-from PIL import Image
+from PIL import Image, ImageEnhance
 import requests
 from io import BytesIO
 
 router = APIRouter()
 
-@router.get("/gen")
+@router.get("/generate_image")
 def generate_image(avatar_url: str, mode: int = 1):
     try:
         if mode == 1:
@@ -61,6 +61,38 @@ def generate_image(avatar_url: str, mode: int = 1):
             # Guardar la imagen resultante en un buffer
             buffer = BytesIO()
             image.save(buffer, format="PNG")
+            buffer.seek(0)
+
+            return StreamingResponse(buffer, media_type="image/png")
+
+        elif mode == 3:
+            # URLs de las imágenes
+            flag_url = "https://upload.wikimedia.org/wikipedia/commons/f/f3/Rainbow_flag_6_colors.svg"
+            image_response = requests.get(avatar_url)
+            flag_response = requests.get(flag_url)
+
+            if image_response.status_code != 200:
+                raise HTTPException(status_code=404, detail="Input image not found")
+            if flag_response.status_code != 200:
+                raise HTTPException(status_code=404, detail="Flag image not found")
+
+            # Cargar las imágenes
+            input_image = Image.open(BytesIO(image_response.content))
+            flag_image = Image.open(BytesIO(flag_response.content)).convert("RGBA")
+
+            # Redimensionar la imagen de la bandera para que coincida con la imagen de entrada
+            flag_image = flag_image.resize(input_image.size, Image.ANTIALIAS)
+
+            # Ajustar la opacidad de la bandera
+            flag_opacity = 0.5  # Opacidad de la bandera (0.0 a 1.0)
+            flag_image = ImageEnhance.Brightness(flag_image).enhance(flag_opacity)
+
+            # Superponer la bandera en la imagen de entrada
+            combined_image = Image.alpha_composite(input_image.convert("RGBA"), flag_image)
+
+            # Guardar la imagen resultante en un buffer
+            buffer = BytesIO()
+            combined_image.save(buffer, format="PNG")
             buffer.seek(0)
 
             return StreamingResponse(buffer, media_type="image/png")
