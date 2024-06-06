@@ -1,40 +1,41 @@
 from fastapi import APIRouter, HTTPException
-import requests
-from bs4 import BeautifulSoup
+import httpx
+from datetime import datetime
 
 router = APIRouter()
 
 @router.get("/profile/{username}")
-def get_tiktok_profile(username: str):
-    try:
-        url = f"https://www.tiktok.com/@{username}"
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, como Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        }
-        response = requests.get(url, headers=headers)
+async def get_tiktok_profile(username: str):
+    async with httpx.AsyncClient() as client:
+        profile_url = f"https://www.tiktok.com/@{username}"
+        response = await client.get(profile_url)
+
         if response.status_code != 200:
-            raise HTTPException(status_code=404, detail="Profile not found")
+            raise HTTPException(status_code=404, detail="User not found")
 
-        soup = BeautifulSoup(response.text, 'html.parser')
-        user_info = {}
+        # Parsing the TikTok profile page to extract information
+        soup = BeautifulSoup(response.content, 'html.parser')
+        try:
+            user_data_script = soup.find('script', id='__NEXT_DATA__')
+            user_data_json = user_data_script.string
+            user_data = json.loads(user_data_json)
+            user_info = user_data['props']['pageProps']['userInfo']
 
-        # Extract profile data using more robust selectors
-        user_info["username"] = username
-        user_info["nickname"] = soup.find("h1", {"data-e2e": "user-title"}).text if soup.find("h1", {"data-e2e": "user-title"}) else ""
-        user_info["bio"] = soup.find("h2", {"data-e2e": "user-bio"}).text if soup.find("h2", {"data-e2e": "user-bio"}) else ""
-        
-        followers_elem = soup.find("strong", {"title": "Followers"})
-        user_info["followers"] = followers_elem.text if followers_elem else ""
+            # Extract user information
+            user = user_info['user']
+            stats = user_info['stats']
 
-        following_elem = soup.find("strong", {"title": "Following"})
-        user_info["following"] = following_elem.text if following_elem else ""
-
-        likes_elem = soup.find("strong", {"title": "Likes"})
-        user_info["likes"] = likes_elem.text if likes_elem else ""
-
-        avatar_elem = soup.find("img", {"class": "avatar"})
-        user_info["avatar"] = avatar_elem['src'] if avatar_elem else ""
-
-        return user_info
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Error fetching profile details: " + str(e))
+            return {
+                "username": user.get("uniqueId"),
+                "nickname": user.get("nickname"),
+                "verified": user.get("verified"),
+                "bio": user.get("signature"),
+                "followers": stats.get("followerCount"),
+                "following": stats.get("followingCount"),
+                "likes": stats.get("heartCount"),
+                "videos": stats.get("videoCount"),
+                "avatar": user.get("avatarThumb"),
+                "created_at": user.get("createTime")
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail="Error parsing profile information")
