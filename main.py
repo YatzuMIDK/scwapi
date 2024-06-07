@@ -9,6 +9,7 @@ from cheems.router import router as cheems_router
 from wiki.router import router as wiki_router
 from img.router import router as img_router
 from rbx.router import router as rbx_router
+from bj.router import router as bj_router
 import uvicorn
 import time
 import psutil
@@ -27,6 +28,8 @@ app.include_router(cheems_router, prefix="/cheems", tags=["Cheems"])
 app.include_router(wiki_router, prefix="/wiki", tags=["Wiki"])
 app.include_router(img_router, prefix="/img", tags=["Img"])
 app.include_router(rbx_router, prefix="/rbx", tags=["Rbx"])
+app.include_router(bj_router, prefix="/bj", tags=["Blackjack"]
+
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     start_time = time.time()
