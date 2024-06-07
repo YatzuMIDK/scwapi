@@ -1,21 +1,31 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from PIL import Image, ImageDraw, ImageFont
+import requests
 import os
-from .ph_comment import generate_ph_comment
 
-router = APIRouter()
+def generate_ph_comment(username: str, comment: str, avatar_url: str) -> str:
+    # Cargar la fuente
+    font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    if not os.path.exists(font_path):
+        raise Exception("Font path not found")
+    font = ImageFont.truetype(font_path, 16)
+    small_font = ImageFont.truetype(font_path, 12)
+    
+    # Crear una imagen en blanco
+    img = Image.new('RGB', (500, 100), color=(255, 255, 255))
+    d = ImageDraw.Draw(img)
 
-class CommentRequest(BaseModel):
-    username: str
-    comment: str
-    avatar_url: str
+    # Descargar y pegar el avatar
+    response = requests.get(avatar_url, stream=True)
+    response.raise_for_status()
+    avatar = Image.open(response.raw).resize((50, 50))
+    img.paste(avatar, (10, 10))
 
-@router.post("/comment")
-async def create_comment_image(request: CommentRequest):
-    try:
-        file_path = generate_ph_comment(request.username, request.comment, request.avatar_url)
-        if not os.path.exists(file_path):
-            raise HTTPException(status_code=500, detail="Error generating image")
-        return {"image_url": file_path}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    # Agregar el nombre de usuario y el comentario
+    d.text((70, 10), username, font=font, fill=(0, 0, 0))
+    d.text((70, 40), comment, font=small_font, fill=(0, 0, 0))
+
+    # Guardar la imagen
+    file_path = f"comment_{username}.png"
+    img.save(file_path)
+
+    return file_path
