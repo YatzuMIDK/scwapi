@@ -10,7 +10,7 @@ class CommentRequest(BaseModel):
     comment: str
     avatar_url: str
 
-@router.post("/create_comment_image")
+@router.post("/comment")
 async def create_comment_image(request: CommentRequest):
     try:
         file_path = generate_ph_comment(request.username, request.comment, request.avatar_url)
