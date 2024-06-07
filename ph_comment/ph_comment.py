@@ -1,8 +1,12 @@
 from PIL import Image, ImageDraw, ImageFont
+import requests
+import os
 
 def generate_ph_comment(username: str, comment: str, avatar_url: str) -> str:
     # Cargar la fuente
     font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    if not os.path.exists(font_path):
+        raise Exception("Font path not found")
     font = ImageFont.truetype(font_path, 16)
     small_font = ImageFont.truetype(font_path, 12)
     
@@ -11,7 +15,9 @@ def generate_ph_comment(username: str, comment: str, avatar_url: str) -> str:
     d = ImageDraw.Draw(img)
 
     # Descargar y pegar el avatar
-    avatar = Image.open(requests.get(avatar_url, stream=True).raw).resize((50, 50))
+    response = requests.get(avatar_url, stream=True)
+    response.raise_for_status()
+    avatar = Image.open(response.raw).resize((50, 50))
     img.paste(avatar, (10, 10))
 
     # Agregar el nombre de usuario y el comentario
