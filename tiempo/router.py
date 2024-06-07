@@ -23,4 +23,4 @@ def to_unix(timestamp: str = Query(..., description="Timestamp in ISO 8601 forma
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    return UnixTimestampResponse(unix_timestamp=unix_timestamp)
+    return UnixTimestampResponse(unix=unix_timestamp)
