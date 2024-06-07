@@ -6,3 +6,4 @@ Pillow
 beautifulsoup4
 wikipedia-api
 httpx
+googletrans
