@@ -22,13 +22,13 @@ def translate_text(
             raise HTTPException(status_code=400, detail="Invalid target language code")
 
         # Realizar la traducción
-        traduccion = translator.translate(text, dest=target_lang)
+        traduccion = translator.translate(texto, dest=target_lang)
         
         return TranslationResponse(
-            texto=text,
-            traduccion=translation.text,
-            source_lang=translation.src,
-            target_lang=target_language
+            texto=texto,
+            traduccion=traduccion.text,
+            source_lang=traduccion.src,
+            target_lang=target_lang
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
