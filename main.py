@@ -28,7 +28,7 @@ app.include_router(cheems_router, prefix="/cheems", tags=["Cheems"])
 app.include_router(wiki_router, prefix="/wiki", tags=["Wiki"])
 app.include_router(img_router, prefix="/img", tags=["Img"])
 app.include_router(rbx_router, prefix="/rbx", tags=["Rbx"])
-app.include_router(bj_router, prefix="/bj", tags=["Blackjack"]
+app.include_router(bj_router, prefix="/bj", tags=["Blackjack"])
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
