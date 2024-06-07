@@ -4,6 +4,6 @@ requests
 psutil
 Pillow
 beautifulsoup4
-wikipedia-api
+pytz
 httpx
 googletrans
