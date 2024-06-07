@@ -14,10 +14,10 @@ class Card(BaseModel):
 
     @property
     def display(self):
-        return f"{self.rank}{self.suit} ({self.value})"
+        return f"{self.rank}{self.suit}"
 
 class Hand(BaseModel):
-    cards: List[str]  # Almacenará las representaciones combinadas de las cartas
+    cards: str  # Almacenará la representación combinada de las cartas
     value: int
     is_soft: bool  # Si la mano es "soft" (contiene un As contado como 11)
 
@@ -118,7 +118,7 @@ class BlackjackGame:
 
     def get_hand(self, hand: List[Card]) -> Hand:
         value, is_soft = calculate_hand_value(hand)
-        return Hand(cards=[card.display for card in hand], value=value, is_soft=is_soft)
+        return Hand(cards="".join(card.display for card in hand), value=value, is_soft=is_soft)
 
 games = {}
 
