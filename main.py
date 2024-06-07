@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from datetime import datetime
 from connect4.router import router as connect4_router
 from steam.router import router as steam_router
-from tiktok.router import router as tiktok_router
+from urban.router import router as urban_router
 from name_combiner.router import router as name_combiner_router
 from cheems.router import router as cheems_router
 from wiki.router import router as wiki_router
@@ -23,7 +23,7 @@ start_time = datetime.utcnow()
 # Incluir los routers de Connect4, Steam, TikTok, Name Combiner y Cheems
 app.include_router(connect4_router, prefix="/connect4", tags=["Connect4"])
 app.include_router(steam_router, prefix="/steam", tags=["Steam"])
-app.include_router(tiktok_router, prefix="/tiktok", tags=["TikTok"])
+app.include_router(urban_router, prefix="/urban", tags=["Urban"])
 app.include_router(name_combiner_router, prefix="/name_combiner", tags=["NameCombiner"])
 app.include_router(cheems_router, prefix="/cheems", tags=["Cheems"])
 app.include_router(wiki_router, prefix="/wiki", tags=["Wiki"])
