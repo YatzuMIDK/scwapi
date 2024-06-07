@@ -13,16 +13,16 @@ class TranslationResponse(BaseModel):
 
 @router.get("/traducir", response_model=TranslationResponse)
 def translate_text(
-    text: str = Query(..., description="Text to translate"),
-    target_language: str = Query(..., description="Target language code (e.g., 'es' for Spanish)")
+    texto: str = Query(..., description="Text to translate"),
+    target_lang: str = Query(..., description="Target language code (e.g., 'es' for Spanish)")
 ):
     try:
         # Validar si el idioma de destino es válido
-        if target_language not in LANGUAGES:
+        if target_lang not in LANGUAGES:
             raise HTTPException(status_code=400, detail="Invalid target language code")
 
         # Realizar la traducción
-        translation = translator.translate(text, dest=target_language)
+        traduccion = translator.translate(text, dest=target_lang)
         
         return TranslationResponse(
             texto=text,
