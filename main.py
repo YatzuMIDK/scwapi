@@ -10,7 +10,7 @@ from wiki.router import router as wiki_router
 from img.router import router as img_router
 from ph_comment.router import router as ph_comment_router
 from bj.router import router as bj_router
-from time.router import router as time_router
+from tiempo.router import router as tiempo_router
 import uvicorn
 import time
 import psutil
@@ -30,7 +30,7 @@ app.include_router(wiki_router, prefix="/wiki", tags=["Wiki"])
 app.include_router(img_router, prefix="/img", tags=["Img"])
 app.include_router(ph_comment_router, prefix="/ph_comment", tags=["PHComment"])
 app.include_router(bj_router, prefix="/bj", tags=["Blackjack"])
-app.include_router(time_router, prefix="/time", tags=["Time"])
+app.include_router(tiempo_router, prefix="/tiempo", tags=["Time"])
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
