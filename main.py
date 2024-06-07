@@ -8,7 +8,7 @@ from name_combiner.router import router as name_combiner_router
 from cheems.router import router as cheems_router
 from wiki.router import router as wiki_router
 from img.router import router as img_router
-from ph_comment.router import router as ph_comment_router
+from traducir.router import router as traducir_router
 from bj.router import router as bj_router
 from tiempo.router import router as tiempo_router
 import uvicorn
@@ -28,7 +28,7 @@ app.include_router(name_combiner_router, prefix="/name_combiner", tags=["NameCom
 app.include_router(cheems_router, prefix="/cheems", tags=["Cheems"])
 app.include_router(wiki_router, prefix="/wiki", tags=["Wiki"])
 app.include_router(img_router, prefix="/img", tags=["Img"])
-app.include_router(ph_comment_router, prefix="/ph_comment", tags=["PHComment"])
+app.include_router(traducir_router, prefix="/traducir", tags=["Traducir"])
 app.include_router(bj_router, prefix="/bj", tags=["Blackjack"])
 app.include_router(tiempo_router, prefix="/tiempo", tags=["Time"])
 
