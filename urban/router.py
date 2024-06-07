@@ -19,7 +19,7 @@ def define_word(word: str = Query(..., description="Word to define in Urban Dict
         data = response.json()
 
         if not data["list"]:
-            raise HTTPException(status_code=404, detail="Word not found in Urban Dictionary")
+            raise HTTPException(status_code=404, detail="La palabra no existe en el urban dictionary")
 
         # Obtener la primera definición
         definition = data["list"][0]["definition"]
