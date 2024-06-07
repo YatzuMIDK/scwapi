@@ -8,7 +8,7 @@ from name_combiner.router import router as name_combiner_router
 from cheems.router import router as cheems_router
 from wiki.router import router as wiki_router
 from img.router import router as img_router
-from rbx.router import router as rbx_router
+from ph_comment.router import router as ph_comment_router
 from bj.router import router as bj_router
 import uvicorn
 import time
@@ -27,7 +27,7 @@ app.include_router(name_combiner_router, prefix="/name_combiner", tags=["NameCom
 app.include_router(cheems_router, prefix="/cheems", tags=["Cheems"])
 app.include_router(wiki_router, prefix="/wiki", tags=["Wiki"])
 app.include_router(img_router, prefix="/img", tags=["Img"])
-app.include_router(rbx_router, prefix="/rbx", tags=["Rbx"])
+app.include_router(ph_comment_router, prefix="/ph_comment", tags=["PHComment"])
 app.include_router(bj_router, prefix="/bj", tags=["Blackjack"])
 
 @app.middleware("http")
