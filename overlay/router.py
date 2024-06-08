@@ -1,46 +1,36 @@
 from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import StreamingResponse
-from PIL import Image, ImageEnhance
+from PIL import Image
 import requests
 from io import BytesIO
 
 router = APIRouter()
 
-@router.post("/overlay")
-async def overlay_image(background_url: str, opacity: float = 0.5):
+@router.get("/generate_image")
+def generate_image(avatar_url: str):
     try:
-        # Cargar la imagen de fondo desde la URL
-        response = requests.get(background_url)
-        if response.status_code != 200:
-            raise HTTPException(status_code=400, detail="Cannot download background image")
+        # URLs de las imágenes
+        bg_url = "https://cdn.discordapp.com/attachments/1187251830728708146/1229987656461451345/image_2024-04-16_225148457.png?ex=6661cd05&is=66607b85&hm=3ceaa6a47cde5304ad5134f81d5a8fa689234b4e96dfad01408484b8edd8d886&"
+        avatar_response = requests.get(avatar_url)
 
-        background = Image.open(BytesIO(response.content))
+        if avatar_response.status_code != 200:
+            raise HTTPException(status_code=404, detail="Avatar image not found")
 
-        # Cargar la imagen superpuesta
-        overlay_url = "https://i.postimg.cc/BQst1zJk/images-5.png"
-        response = requests.get(overlay_url)
-        if response.status_code != 200:
-            raise HTTPException(status_code=400, detail="Cannot download overlay image")
+        # Cargar las imágenes
+        bg_image = Image.open(requests.get(bg_url, stream=True).raw)
+        avatar_image = Image.open(BytesIO(avatar_response.content))
 
-        overlay = Image.open(BytesIO(response.content)).convert("RGBA")
+        # Redimensionar la imagen del avatar
+        avatar_image = avatar_image.resize((491, 292))
 
-        # Redimensionar la imagen superpuesta para que coincida con el tamaño de la imagen de fondo
-        overlay = overlay.resize(background.size)
-
-        # Ajustar la opacidad de la imagen superpuesta
-        alpha = overlay.split()[3]
-        alpha = ImageEnhance.Brightness(alpha).enhance(opacity)
-        overlay.putalpha(alpha)
-
-        # Superponer la imagen
-        combined = Image.alpha_composite(background.convert("RGBA"), overlay)
+        # Superponer el avatar en la imagen de fondo
+        bg_image.paste(avatar_image, (10, 4), avatar_image)
 
         # Guardar la imagen resultante en un buffer
         buffer = BytesIO()
-        combined.save(buffer, format="PNG")
+        bg_image.save(buffer, format="PNG")
         buffer.seek(0)
 
         return StreamingResponse(buffer, media_type="image/png")
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Error generating image: " + str(e))
