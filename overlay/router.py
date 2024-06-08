@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
-from PIL import Image
+from fastapi.responses import StreamingResponse
+from PIL import Image, ImageEnhance
 import requests
 from io import BytesIO
 
@@ -11,13 +12,13 @@ def generate_image(avatar_url: str):
         # URLs de las imágenes
         bg_url = "https://cdn.discordapp.com/attachments/1187251830728708146/1229987656461451345/image_2024-04-16_225148457.png?ex=6661cd05&is=66607b85&hm=3ceaa6a47cde5304ad5134f81d5a8fa689234b4e96dfad01408484b8edd8d886&"
         avatar_response = requests.get(avatar_url)
-
+        
         if avatar_response.status_code != 200:
             raise HTTPException(status_code=404, detail="Avatar image not found")
 
         # Cargar las imágenes
-        bg_image = Image.open(requests.get(bg_url, stream=True).raw)
-        avatar_image = Image.open(BytesIO(avatar_response.content))
+        bg_image = Image.open(requests.get(bg_url, stream=True).raw).convert("RGBA")
+        avatar_image = Image.open(BytesIO(avatar_response.content)).convert("RGBA")
 
         # Redimensionar la imagen del avatar
         avatar_image = avatar_image.resize((491, 292))
