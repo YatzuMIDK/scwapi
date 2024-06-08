@@ -1,11 +1,12 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File
+from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import StreamingResponse
 from PIL import Image, ImageEnhance
 import requests
 from io import BytesIO
 
 router = APIRouter()
 
-@router.post("/puto")
+@router.post("/overlay")
 async def overlay_image(background_url: str, opacity: float = 0.5):
     try:
         # Cargar la imagen de fondo desde la URL
