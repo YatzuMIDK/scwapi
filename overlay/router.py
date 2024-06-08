@@ -5,7 +5,7 @@ from io import BytesIO
 
 router = APIRouter()
 
-@router.get("/generate_image")
+@router.get("/gen")
 def generate_image(avatar_url: str):
     try:
         # URLs de las imágenes
