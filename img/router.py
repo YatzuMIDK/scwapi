@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Response, HTTPException, Query, Form
 from easy_pil import Editor, Font
 from io import BytesIO
+from pydantic import BaseModel
 import requests
 import logging
 
