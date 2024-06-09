@@ -6,4 +6,5 @@ Pillow
 beautifulsoup4
 pytz
 httpx
+easy-pil
 googletrans==4.0.0-rc1
