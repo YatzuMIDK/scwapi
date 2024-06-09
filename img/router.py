@@ -31,10 +31,9 @@ def get_custom_image(request: WelcomeCardRequest):
         background_image = Editor(BytesIO(background_response.content)).resize((800, 400)).image
 
         # Cargar fuentes
-font_map = {
-    "permanent-marker": lambda size, variant: Font.truetype("img/PermanentMarker-Regular.ttf", size),
-}
-
+        font_map = {
+            "permanent-marker": lambda size, variant: Font.truetype("img/PermanentMarker-Regular.ttf", size),
+        }
 
         if request.font_type not in font_map:
             raise HTTPException(status_code=400, detail="Invalid font type provided.")
