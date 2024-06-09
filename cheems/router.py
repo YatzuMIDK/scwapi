@@ -17,6 +17,6 @@ def cheemsify(text: str) -> str:
             cheems_text.append(word)
     return " ".join(cheems_text)
 
-@router.get("/cheemsificar/{text}")
+@router.get("/{text}")
 def cheemsify_endpoint(text: str):
     return {"original": text, "cheemsificado": cheemsify(text)}
