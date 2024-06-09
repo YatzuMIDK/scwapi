@@ -9,6 +9,7 @@ from cheems.router import router as cheems_router
 from traducir.router import router as traducir_router
 from bj.router import router as bj_router
 from tiempo.router import router as tiempo_router
+from img.router import router as img_router
 import uvicorn
 import time
 import psutil
