@@ -8,14 +8,14 @@ router = APIRouter()
 
 class WelcomeCardRequest(BaseModel):
     avatar: str
-    background: str
-    ctx2: str
-    ctx1: str = "BIENVENIDO"
-    ctx3: str = "Disfruta tu estancia en el servidor"
+    background: str = "https://iili.io/JyT6hnn.jpg"
+    user: str
+    txt1: str = "BIENVENIDO"
+    txt2: str = "Disfruta tu estancia en el servidor"
     font_color: str = "white"
     circle_color: str = "white"
 
-@router.post("/welcomecard/")
+@router.post("/wlc")
 def get_custom_image(request: WelcomeCardRequest):
     try:
         # Descargar la imagen del avatar
