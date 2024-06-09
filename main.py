@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from datetime import datetime
-from overlay.router import router as overlay_router
+from casino.router import router as overlay_router
 from steam.router import router as steam_router
 from urban.router import router as urban_router
 from name_combiner.router import router as name_combiner_router
@@ -19,7 +19,7 @@ app = FastAPI()
 start_time = datetime.utcnow()
 
 # Incluir los routers de Connect4, Steam, TikTok, Name Combiner y Cheems
-app.include_router(overlay_router, prefix="/overlay", tags=["Overlay"])
+app.include_router(casino_router, prefix="/casino", tags=["casino"])
 app.include_router(steam_router, prefix="/steam", tags=["Steam"])
 app.include_router(urban_router, prefix="/urban", tags=["Urban"])
 app.include_router(name_combiner_router, prefix="/name_combiner", tags=["NameCombiner"])
