@@ -11,7 +11,7 @@ class TranslationResponse(BaseModel):
     source_lang: str
     target_lang: str
 
-@router.get("/traducir", response_model=TranslationResponse)
+@router.get("/", response_model=TranslationResponse)
 def translate_text(
     texto: str = Query(..., description="Text to translate"),
     target_lang: str = Query(..., description="Target language code (e.g., 'es' for Spanish)")
