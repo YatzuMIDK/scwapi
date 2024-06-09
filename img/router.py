@@ -35,10 +35,16 @@ def get_custom_image(avatar: str, background: str, ctx1: str="BIENVENIDO", ctx2:
         editor.paste(avatar_image.image, (250 + horizontal_shift, 90))
         editor.ellipse((250 + horizontal_shift, 90), 150, 150, outline="white", stroke_width=5)
 
-        # Añadir texto a la imagen con borde negro
-        editor.text((320 + horizontal_shift, 260), ctx1, color="white", font=poppins, align="center", stroke_width=2, stroke_color="black")
-        editor.text((320 + horizontal_shift, 315), ctx2, color="white", font=poppins_small, align="center", stroke_width=2, stroke_color="black")
-        editor.text((320 + horizontal_shift, 350), ctx3, color="white", font=poppins_small, align="center", stroke_width=2, stroke_color="black")
+        # Añadir texto a la imagen con efecto de sombra
+        shadow_offset = 3
+        editor.text((320 + horizontal_shift + shadow_offset, 260 + shadow_offset), ctx1, color="black", font=poppins, align="center")
+        editor.text((320 + horizontal_shift, 260), ctx1, color="white", font=poppins, align="center")
+
+        editor.text((320 + horizontal_shift + shadow_offset, 315 + shadow_offset), ctx2, color="black", font=poppins_small, align="center")
+        editor.text((320 + horizontal_shift, 315), ctx2, color="white", font=poppins_small, align="center")
+
+        editor.text((320 + horizontal_shift + shadow_offset, 350 + shadow_offset), ctx3, color="black", font=poppins_small, align="center")
+        editor.text((320 + horizontal_shift, 350), ctx3, color="white", font=poppins_small, align="center")
 
         # Guardar la imagen en un buffer
         img_buffer = BytesIO()
