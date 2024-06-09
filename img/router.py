@@ -11,8 +11,8 @@ class WelcomeCardRequest(BaseModel):
     avatar: str
     background: str
     ctx2: str  # Obligatorio
-    ctx1: str = "WELCOME"  # Opcional con valor por defecto
-    ctx3: str = "You are the 457th Member"  # Opcional con valor por defecto
+    ctx1: str = "BIENVENIDO"  # Opcional con valor por defecto
+    ctx3: str = "Disfruta tu estancia"  # Opcional con valor por defecto
     font_type: str = "permanent-marker"  # Tipo de letra con valor por defecto
 
 @router.post("/wlc")
@@ -32,11 +32,7 @@ def get_custom_image(request: WelcomeCardRequest):
 
         # Cargar fuentes
         font_map = {
-            "poppins": Font.poppins,
-            "arial": Font.arial,
-            "times": Font.times,
             "permanent-marker": lambda size, variant: Font.custom("img/PermanentMarker-Regular.ttf", size),
-            # Puedes agregar más fuentes aquí
         }
 
         if request.font_type not in font_map:
