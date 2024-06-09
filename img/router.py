@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Response, HTTPException
+from pydantic import BaseModel
 from easy_pil import Editor, Font
 from io import BytesIO
 import requests
@@ -6,24 +7,43 @@ import logging
 
 router = APIRouter()
 
-@router.get("/welcomecard/")
-def get_custom_image(avatar: str, background: str, ctx1: str="BIENVENIDO", ctx2: str="user", ctx3: str="Disfruta tu estancia en el servidor"):
+class WelcomeCardRequest(BaseModel):
+    avatar: str
+    background: str
+    ctx2: str  # Obligatorio
+    ctx1: str = "WELCOME"  # Opcional con valor por defecto
+    ctx3: str = "You are the 457th Member"  # Opcional con valor por defecto
+    font_type: str = "permanent-marker"  # Tipo de letra con valor por defecto
+
+@router.post("/")
+def get_custom_image(request: WelcomeCardRequest):
     try:
         # Descargar la imagen del avatar
-        avatar_response = requests.get(avatar)
+        avatar_response = requests.get(request.avatar)
         if avatar_response.status_code != 200:
             raise HTTPException(status_code=400, detail="Failed to download avatar image.")
         avatar_image = Editor(BytesIO(avatar_response.content)).resize((150, 150)).circle_image()
 
         # Descargar la imagen de fondo
-        background_response = requests.get(background)
+        background_response = requests.get(request.background)
         if background_response.status_code != 200:
             raise HTTPException(status_code=400, detail=f"Failed to download background image. Status code: {background_response.status_code}, Reason: {background_response.reason}")
         background_image = Editor(BytesIO(background_response.content)).resize((800, 400)).image
 
         # Cargar fuentes
-        poppins = Font.poppins(size=50, variant="bold")
-        poppins_small = Font.poppins(size=25, variant="regular")
+        font_map = {
+            "poppins": Font.poppins,
+            "arial": Font.arial,
+            "times": Font.times,
+            "permanent-marker": lambda size, variant: Font.custom("img/PermanentMarker-Regular.ttf", size),
+            # Puedes agregar más fuentes aquí
+        }
+
+        if request.font_type not in font_map:
+            raise HTTPException(status_code=400, detail="Invalid font type provided.")
+
+        poppins = font_map[request.font_type](size=50, variant="bold")
+        poppins_small = font_map[request.font_type](size=25, variant="regular")
 
         # Desplazamiento horizontal para centrar el contenido
         horizontal_shift = 63
@@ -36,9 +56,9 @@ def get_custom_image(avatar: str, background: str, ctx1: str="BIENVENIDO", ctx2:
         editor.ellipse((250 + horizontal_shift, 90), 150, 150, outline="white", stroke_width=5)
 
         # Añadir texto a la imagen
-        editor.text((320 + horizontal_shift, 260), ctx1, color="white", font=poppins, align="center")
-        editor.text((320 + horizontal_shift, 315), ctx2, color="white", font=poppins_small, align="center")
-        editor.text((320 + horizontal_shift, 350), ctx3, color="white", font=poppins_small, align="center")
+        editor.text((320 + horizontal_shift, 260), request.ctx1, color="white", font=poppins, align="center")
+        editor.text((320 + horizontal_shift, 315), request.ctx2, color="white", font=poppins_small, align="center")
+        editor.text((320 + horizontal_shift, 350), request.ctx3, color="white", font=poppins_small, align="center")
 
         # Guardar la imagen en un buffer
         img_buffer = BytesIO()
