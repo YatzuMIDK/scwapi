@@ -250,7 +250,7 @@ async def place_horse_race_bet(bet: HorseBet):
 # Modelos y endpoints para la ruleta
 class RouletteBet(BaseModel):
     bet_type: str
-    bet_value: strclass 
+    bet_value: str
     bet_amount: float
 
 class RouletteResult(BaseModel):
