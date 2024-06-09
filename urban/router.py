@@ -1,46 +1,51 @@
-from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import StreamingResponse
-from PIL import Image, ImageEnhance
+from fastapi import APIRouter, HTTPException
 import requests
-from io import BytesIO
+import re
+from bs4 import BeautifulSoup
+from googletrans import Translator
 
 router = APIRouter()
 
-@router.post("/overlay")
-async def overlay_image(background_url: str, opacity: float = 0.5):
+@router.get("/define")
+async def define_word(word: str):
     try:
-        # Cargar la imagen de fondo desde la URL
-        response = requests.get(background_url)
+        # URL de Urban Dictionary para buscar la palabra
+        url = f"https://www.urbandictionary.com/define.php?term={word}"
+        
+        # Hacer la solicitud a Urban Dictionary
+        response = requests.get(url)
+        
+        # Comprobar si la solicitud fue exitosa
         if response.status_code != 200:
-            raise HTTPException(status_code=400, detail="Cannot download background image")
+            raise HTTPException(status_code=500, detail="Error al obtener la definición de Urban Dictionary")
 
-        background = Image.open(BytesIO(response.content))
+        # Parsear la respuesta HTML
+        soup = BeautifulSoup(response.content, "html.parser")
 
-        # Cargar la imagen superpuesta
-        overlay_url = "https://i.postimg.cc/BQst1zJk/images-5.png"
-        response = requests.get(overlay_url)
-        if response.status_code != 200:
-            raise HTTPException(status_code=400, detail="Cannot download overlay image")
+        # Extraer la definición
+        meaning_div = soup.find("div", {"class": "meaning"})
+        if not meaning_div:
+            raise HTTPException(status_code=404, detail="Definición no encontrada")
 
-        overlay = Image.open(BytesIO(response.content)).convert("RGBA")
+        # Extraer el texto de la definición
+        definition = meaning_div.text.strip()
 
-        # Redimensionar la imagen superpuesta para que coincida con el tamaño de la imagen de fondo
-        overlay = overlay.resize(background.size)
+        # Extraer el ejemplo
+        example_div = soup.find("div", {"class": "example"})
+        if not example_div:
+            example = ""
+        else:
+            example = example_div.text.strip()
 
-        # Ajustar la opacidad de la imagen superpuesta
-        alpha = overlay.split()[3]
-        alpha = ImageEnhance.Brightness(alpha).enhance(opacity)
-        overlay.putalpha(alpha)
+        # Traducir la definición y el ejemplo al español
+        translator = Translator()
+        translated_definition = translator.translate(definition, dest='es').text
+        translated_example = translator.translate(example, dest='es').text if example else ""
 
-        # Superponer la imagen
-        combined = Image.alpha_composite(background.convert("RGBA"), overlay)
-
-        # Guardar la imagen resultante en un buffer
-        buffer = BytesIO()
-        combined.save(buffer, format="PNG")
-        buffer.seek(0)
-
-        return StreamingResponse(buffer, media_type="image/png")
-
+        return {
+            "word": word,
+            "definition": translated_definition,
+            "example": translated_example
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
