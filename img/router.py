@@ -15,7 +15,7 @@ class WelcomeCardRequest(BaseModel):
     ctx3: str = "You are the 457th Member"  # Opcional con valor por defecto
     font_type: str = "permanent-marker"  # Tipo de letra con valor por defecto
 
-@router.post("/")
+@router.post("/wlc")
 def get_custom_image(request: WelcomeCardRequest):
     try:
         # Descargar la imagen del avatar
