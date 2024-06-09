@@ -10,7 +10,7 @@ class UnixTimestampResponse(BaseModel):
     unix_timestamp: int
 
 # Endpoint para transformar marcas de tiempo TZ a UNIX
-@router.get("/to_unix", response_model=UnixTimestampResponse)
+@router.get("/", response_model=UnixTimestampResponse)
 def to_unix(timestamp: str = Query(..., description="Timestamp in ISO 8601 format (e.g., '2024-06-06T12:34:56')")):
     try:
         # Parsear la marca de tiempo con la zona horaria UTC por defecto
