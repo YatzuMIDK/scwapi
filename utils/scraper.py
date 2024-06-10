@@ -13,10 +13,6 @@ def get_player_info(player_name: str) -> dict:
 
     response = requests.get(search_url, headers=headers)
     soup = BeautifulSoup(response.content, 'html.parser')
-
-    # Depuración: Imprimir el HTML de la página de resultados de búsqueda
-    print("HTML de la página de resultados de búsqueda:")
-    print(soup.prettify())
     
     try:
         player_link_tag = soup.find('a', {'class': 'spielprofil_tooltip'})
