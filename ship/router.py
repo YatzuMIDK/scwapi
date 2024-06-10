@@ -1,8 +1,9 @@
-from easy_pil import Editor, Font, Canvas
+from easy_pil import Editor, Font, load_image
 from io import BytesIO
 from fastapi import APIRouter, Response, HTTPException
 import requests
 import random
+from PIL import Image, ImageDraw
 
 router = APIRouter()
 
@@ -46,10 +47,28 @@ def image(avatar1: str, avatar2: str, num: int = None, bg_url: str = None):
     rect_color = (0, 0, 0, 150)  # Color negro semi-transparente
     rect_radius = 30
 
-    canvas = Canvas((rect_width, rect_height), color=rect_color)
-    canvas.rectangle((0, 0, rect_width, rect_height), radius=rect_radius)
+    # Crear una nueva imagen para el rectángulo con bordes redondeados
+    rectangle_img = Image.new('RGBA', (rect_width, rect_height), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(rectangle_img)
+    
+    # Dibuja un rectángulo con bordes redondeados
+    def round_rectangle(draw, xy, rad, fill=None, outline=None):
+        x1, y1, x2, y2 = xy
+        draw.rectangle([x1 + rad, y1, x2 - rad, y2], fill=fill)
+        draw.rectangle([x1, y1 + rad, x2, y2 - rad], fill=fill)
+        draw.pieslice([x1, y1, x1 + rad * 2, y1 + rad * 2], 180, 270, fill=fill)
+        draw.pieslice([x2 - rad * 2, y1, x2, y1 + rad * 2], 270, 360, fill=fill)
+        draw.pieslice([x1, y2 - rad * 2, x1 + rad * 2, y2], 90, 180, fill=fill)
+        draw.pieslice([x2 - rad * 2, y2 - rad * 2, x2, y2], 0, 90, fill=fill)
+        draw.rectangle([x1 + rad, y1, x2 - rad, y1 + rad], outline=outline)
+        draw.rectangle([x1, y1 + rad, x1 + rad, y2 - rad], outline=outline)
+        draw.rectangle([x2 - rad, y1 + rad, x2, y2 - rad], outline=outline)
+        draw.rectangle([x1 + rad, y2 - rad, x2 - rad, y2], outline=outline)
 
-    gen.paste(canvas, (rect_x, rect_y), canvas.image)
+    round_rectangle(draw, [0, 0, rect_width, rect_height], rect_radius, fill=rect_color)
+
+    # Pegar el rectángulo en la imagen de fondo
+    gen.paste(Editor(rectangle_img), (rect_x, rect_y), rectangle_img)
 
     # Agregar el corazón y el texto
     gen.paste(corazon, (330, 36))
@@ -57,9 +76,9 @@ def image(avatar1: str, avatar2: str, num: int = None, bg_url: str = None):
     
     # Agregar los avatares
     gen.paste(profile, (100, 50))
-    gen.ellipse((100, 50), 200, 200, outline="red", stroke_width=4)
+    gen.ellipse((100, 50), 200, 200, outline="magenta", stroke_width=4)
     gen.paste(profile_2, (600, 50))
-    gen.ellipse((600, 50), 200, 200, outline="red", stroke_width=4)
+    gen.ellipse((600, 50), 200, 200, outline="magenta", stroke_width=4)
 
     # Convertir la imagen en bytes y devolverla como respuesta
     img_buffer = BytesIO()
