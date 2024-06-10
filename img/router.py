@@ -44,9 +44,9 @@ def get_custom_image(
         avatar_x = (800 - 200) // 2
         avatar_y = 50
         text_x = 400
-        text_y1 = 290
-        text_y2 = 310
-        text_y3 = 330
+        text_y1 = 350
+        text_y2 = 320
+        text_y3 = 290
 
         # Pegar el avatar en la imagen de fondo
         editor.paste(avatar_image.image, (avatar_x, avatar_y))  # Centrar avatar
