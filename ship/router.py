@@ -2,11 +2,15 @@ from easy_pil import Editor, Font, Canvas
 from io import BytesIO
 from fastapi import APIRouter, Response, HTTPException
 import requests
+import random
 
 router = APIRouter()
 
 @router.get("/")
-def image(avatar1: str, avatar2: str, num: int, bg_url: str = None):
+def image(avatar1: str, avatar2: str, num: int = None, bg_url: str = None):
+    # Generar un número aleatorio si num no está proporcionado
+    if num is None:
+        num = random.randint(1, 100)
 
     # Descargar y preparar la imagen de fondo
     if bg_url is None:
@@ -38,7 +42,7 @@ def image(avatar1: str, avatar2: str, num: int, bg_url: str = None):
 
     # Dibujar el rectángulo con bordes circulares
     rect_width, rect_height = 500, 150
-    rect_x, rect_y = (gen.width - rect_width) // 2, 125
+    rect_x, rect_y = (gen.image.width - rect_width) // 2, 125
     rect_color = (0, 0, 0, 150)  # Color negro semi-transparente
     rect_radius = 30
 
@@ -53,9 +57,9 @@ def image(avatar1: str, avatar2: str, num: int, bg_url: str = None):
     
     # Agregar los avatares
     gen.paste(profile, (100, 50))
-    gen.ellipse((100, 50), 200, 200, outline="magenta", stroke_width=4)
+    gen.ellipse((100, 50), 200, 200, outline="red", stroke_width=4)
     gen.paste(profile_2, (600, 50))
-    gen.ellipse((600, 50), 200, 200, outline="magenta", stroke_width=4)
+    gen.ellipse((600, 50), 200, 200, outline="red", stroke_width=4)
 
     # Convertir la imagen en bytes y devolverla como respuesta
     img_buffer = BytesIO()
