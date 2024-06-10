@@ -3,7 +3,7 @@ uvicorn
 requests
 psutil
 Pillow
-beautifulsoup4=4.12.2
+beautifulsoup4==4.12.2
 pytz
 httpx
 easy-pil
