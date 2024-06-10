@@ -25,7 +25,7 @@ def get_custom_image(
         avatar_response = requests.get(avatar)
         if (avatar_response.status_code != 200):
             raise HTTPException(status_code=400, detail="Failed to download avatar image.")
-        avatar_image = Editor(BytesIO(avatar_response.content)).resize((300, 300)).circle_image()  # Aumentar tamaño del avatar
+        avatar_image = Editor(BytesIO(avatar_response.content)).resize((600, 600)).circle_image()  # Aumentar tamaño del avatar
 
         # Descargar la imagen de fondo
         background_response = requests.get(background)
@@ -44,16 +44,16 @@ def get_custom_image(
         editor = Editor(background_image)
 
         # Pegar el avatar en la imagen de fondo
-        editor.paste(avatar_image.image, (450 + horizontal_shift, 100))  # Ajustar coordenadas
-        editor.ellipse((450 + horizontal_shift, 100), 300, 300, outline=circle_color, stroke_width=10)  # Aumentar tamaño del círculo
+        editor.paste(avatar_image.image, (750 + horizontal_shift, 100))  # Ajustar coordenadas
+        editor.ellipse((750 + horizontal_shift, 100), 600, 600, outline=circle_color, stroke_width=10)  # Aumentar tamaño del círculo
 
         # Añadir texto a la imagen con efecto de sombra
         shadow_offset = 3
-        editor.text((600 + horizontal_shift + shadow_offset, 450 + shadow_offset), txt1, color=sombra, font=poppins, align="center")
-        editor.text((600 + horizontal_shift, 450), txt1, color=font_color, font=poppins, align="center")
+        editor.text((750 + horizontal_shift + shadow_offset, 550 + shadow_offset), txt1, color=sombra, font=poppins, align="center")
+        editor.text((750 + horizontal_shift, 450), txt1, color=font_color, font=poppins, align="center")
 
-        editor.text((600 + horizontal_shift + shadow_offset, 550 + shadow_offset), user, color=sombra, font=poppins_small, align="center")
-        editor.text((600 + horizontal_shift, 550), user, color=font_color, font=poppins_small, align="center")
+        editor.text((750 + horizontal_shift + shadow_offset, 550 + shadow_offset), user, color=sombra, font=poppins_small, align="center")
+        editor.text((750 + horizontal_shift, 550), user, color=font_color, font=poppins_small, align="center")
 
         editor.text((600 + horizontal_shift + shadow_offset, 620 + shadow_offset), txt2, color=sombra, font=poppins_small, align="center")
         editor.text((600 + horizontal_shift, 620), txt2, color=font_color, font=poppins_small, align="center")
