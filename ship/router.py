@@ -9,7 +9,7 @@ router = APIRouter()
 def image(avatar1: str, avatar2: str, num: int, bg_url: str = None):
 
     if bg_url is None:
-        background_path = "https://i.postimg.cc/KzJQfnpL/images-2024-06-07-T022236-205.jpg"
+        background_path = "img/bg_ship.jpg"
     else:
         background_response = requests.get(bg_url)
         if background_response.status_code != 200:
