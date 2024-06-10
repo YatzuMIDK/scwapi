@@ -39,13 +39,17 @@ def image(avatar1: str, avatar2: str, num: int = None, bg_url: str = None):
     profile_2 = Editor(BytesIO(avatar_response_2.content)).resize((200, 200)).circle_image()
 
     # Corazón
-    corazon = Editor("img/cora.png").resize((240, 240))
+    corazon = Editor("img/cora.png").resize((240, 260))
 
     # Dibujar el rectángulo con bordes circulares
-    rect_width, rect_height = 730, 230  # Ajustar el tamaño del rectángulo
-    rect_x, rect_y = 100, 50  # Posición debajo de los avatares y el corazón
-    rect_color = (0, 0, 0, 200)  # Color negro más oscuro semi-transparente
+    rect_width, rect_height = 750, 250  # Ajustar el tamaño del rectángulo
+    rect_color = (0, 0, 0, 230)  # Color negro más oscuro semi-transparente
     rect_radius = 30
+
+    # Calcular la posición para centrar el rectángulo
+    image_width, image_height = gen.image.size
+    rect_x = (image_width - rect_width) // 2
+    rect_y = (image_height - rect_height) // 2
 
     # Crear una nueva imagen para el rectángulo con bordes redondeados
     rectangle_img = Image.new('RGBA', (rect_width, rect_height), (0, 0, 0, 0))
