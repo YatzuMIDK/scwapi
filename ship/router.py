@@ -1,4 +1,4 @@
-from easy_pil import Editor, Font, load_image
+from easy_pil import Editor, Font
 from io import BytesIO
 from fastapi import APIRouter, Response, HTTPException
 import requests
@@ -52,7 +52,7 @@ def image(avatar1: str, avatar2: str, num: int = None, bg_url: str = None):
     draw = ImageDraw.Draw(rectangle_img)
     
     # Dibuja un rectángulo con bordes redondeados
-    def round_rectangle(draw, xy, rad, fill=None, outline=None):
+    def round_rectangle(draw, xy, rad, fill=None):
         x1, y1, x2, y2 = xy
         draw.rectangle([x1 + rad, y1, x2 - rad, y2], fill=fill)
         draw.rectangle([x1, y1 + rad, x2, y2 - rad], fill=fill)
@@ -60,16 +60,11 @@ def image(avatar1: str, avatar2: str, num: int = None, bg_url: str = None):
         draw.pieslice([x2 - rad * 2, y1, x2, y1 + rad * 2], 270, 360, fill=fill)
         draw.pieslice([x1, y2 - rad * 2, x1 + rad * 2, y2], 90, 180, fill=fill)
         draw.pieslice([x2 - rad * 2, y2 - rad * 2, x2, y2], 0, 90, fill=fill)
-        draw.rectangle([x1 + rad, y1, x2 - rad, y1 + rad], outline=outline)
-        draw.rectangle([x1, y1 + rad, x1 + rad, y2 - rad], outline=outline)
-        draw.rectangle([x2 - rad, y1 + rad, x2, y2 - rad], outline=outline)
-        draw.rectangle([x1 + rad, y2 - rad, x2 - rad, y2], outline=outline)
 
     round_rectangle(draw, [0, 0, rect_width, rect_height], rect_radius, fill=rect_color)
 
     # Pegar el rectángulo en la imagen de fondo
-    rectangle_mask = rectangle_img.split()[3]  # Usar el canal alfa como máscara
-    gen.paste(Editor(rectangle_img), (rect_x, rect_y), mask=rectangle_mask)
+    gen.image.paste(rectangle_img, (rect_x, rect_y), mask=rectangle_img)
 
     # Agregar el corazón y el texto
     gen.paste(corazon, (330, 36))
