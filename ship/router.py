@@ -5,8 +5,8 @@ import requests
 
 router = APIRouter()
 
-@router.get("/ship-card/")
-def image(avatar1: str, avatar2: str, love: int, background_url: str = None):
+@router.get("/")
+def image(avatar1: str, avatar2: str, num: int, bg_url: str = None):
 
     if background_url is None:
         background_path = "https://i.postimg.cc/KzJQfnpL/images-2024-06-07-T022236-205.jpg"
