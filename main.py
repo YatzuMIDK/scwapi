@@ -11,7 +11,7 @@ from ship.router import router as ship_router
 from tiempo.router import router as tiempo_router
 from img.router import router as img_router
 from gw.router import router as gw_router
-from futbolista.router import router as futbolista_router 
+from boost.router import router as boost_router 
 import uvicorn
 import time
 import psutil
@@ -32,7 +32,7 @@ app.include_router(ship_router, prefix="/ship", tags=["Shipeo"])
 app.include_router(tiempo_router, prefix="/tiempo", tags=["Time"])
 app.include_router(img_router, prefix="/img", tags=["Imagenes"])
 app.include_router(gw_router, prefix="/gw", tags=["Sorteo"])
-app.include_router(futbolista_router, prefix="/futbolista", tags=["Futbolista"])
+app.include_router(boost_router, prefix="/boost", tags=["Boosters"])
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
