@@ -14,7 +14,8 @@ def get_custom_image(
     txt1: str = "BIENVENIDO",
     txt2: str = "Disfruta tu estancia en el servidor",
     font_color: str = "white",
-    circle_color: str = "white"
+    circle_color: str = "white",
+    sombra: str = "black"
 ):
     try:
         # Descargar la imagen del avatar
@@ -44,14 +45,14 @@ def get_custom_image(
         editor.ellipse((250 + horizontal_shift, 90), 150, 150, outline=circle_color, stroke_width=5)
 
         # Añadir texto a la imagen con efecto de sombra
-        shadow_offset = 3
-        editor.text((320 + horizontal_shift + shadow_offset, 260 + shadow_offset), txt1, color="black", font=poppins, align="center")
+        shadow_offset = 5
+        editor.text((320 + horizontal_shift + shadow_offset, 260 + shadow_offset), txt1, color=sombra, font=poppins, align="center")
         editor.text((320 + horizontal_shift, 260), txt1, color=font_color, font=poppins, align="center")
 
-        editor.text((320 + horizontal_shift + shadow_offset, 315 + shadow_offset), user, color="black", font=poppins_small, align="center")
+        editor.text((320 + horizontal_shift + shadow_offset, 315 + shadow_offset), user, color=sombra, font=poppins_small, align="center")
         editor.text((320 + horizontal_shift, 315), user, color=font_color, font=poppins_small, align="center")
 
-        editor.text((320 + horizontal_shift + shadow_offset, 350 + shadow_offset), txt2, color="black", font=poppins_small, align="center")
+        editor.text((320 + horizontal_shift + shadow_offset, 350 + shadow_offset), txt2, color=sombra, font=poppins_small, align="center")
         editor.text((320 + horizontal_shift, 350), txt2, color=font_color, font=poppins_small, align="center")
 
         # Guardar la imagen en un buffer
