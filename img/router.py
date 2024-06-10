@@ -17,22 +17,25 @@ def get_custom_image(
     circle_color: str = "white",
     sombra: str = "black"
 ):
+    if not user:
+        raise HTTPException(status_code=400, detail="El parámetro 'user' no puede estar vacío.")
+    
     try:
         # Descargar la imagen del avatar
         avatar_response = requests.get(avatar)
         if avatar_response.status_code != 200:
             raise HTTPException(status_code=400, detail="Failed to download avatar image.")
-        avatar_image = Editor(BytesIO(avatar_response.content)).resize((150, 150)).circle_image()
+        avatar_image = Editor(BytesIO(avatar_response.content)).resize((200, 200)).circle_image()  # Aumentar tamaño del avatar
 
         # Descargar la imagen de fondo
         background_response = requests.get(background)
         if background_response.status_code != 200:
             raise HTTPException(status_code=400, detail=f"Failed to download background image. Status code: {background_response.status_code}, Reason: {background_response.reason}")
-        background_image = Editor(BytesIO(background_response.content)).resize((800, 400)).image
+        background_image = Editor(BytesIO(background_response.content)).resize((1000, 500)).image  # Aumentar tamaño de la imagen de fondo
 
         # Cargar fuentes
-        poppins = Font.montserrat(size=50, variant="bold")
-        poppins_small = Font.montserrat(size=25, variant="regular")
+        poppins = Font.montserrat(size=60, variant="bold")  # Aumentar tamaño de la fuente
+        poppins_small = Font.montserrat(size=35, variant="regular")  # Aumentar tamaño de la fuente
 
         # Desplazamiento horizontal para centrar el contenido
         horizontal_shift = 63
@@ -41,19 +44,19 @@ def get_custom_image(
         editor = Editor(background_image)
 
         # Pegar el avatar en la imagen de fondo
-        editor.paste(avatar_image.image, (250 + horizontal_shift, 90))
-        editor.ellipse((250 + horizontal_shift, 90), 150, 150, outline=circle_color, stroke_width=5)
+        editor.paste(avatar_image.image, (325 + horizontal_shift, 90))  # Ajustar coordenadas
+        editor.ellipse((325 + horizontal_shift, 90), 200, 200, outline=circle_color, stroke_width=7)  # Aumentar tamaño del círculo
 
         # Añadir texto a la imagen con efecto de sombra
-        shadow_offset = 2
-        editor.text((320 + horizontal_shift + shadow_offset, 260 + shadow_offset), txt1, color=sombra, font=poppins, align="center")
-        editor.text((320 + horizontal_shift, 260), txt1, color=font_color, font=poppins, align="center")
+        shadow_offset = 3
+        editor.text((420 + horizontal_shift + shadow_offset, 280 + shadow_offset), txt1, color=sombra, font=poppins, align="center")
+        editor.text((420 + horizontal_shift, 280), txt1, color=font_color, font=poppins, align="center")
 
-        editor.text((320 + horizontal_shift + shadow_offset, 315 + shadow_offset), user, color=sombra, font=poppins_small, align="center")
-        editor.text((320 + horizontal_shift, 315), user, color=font_color, font=poppins_small, align="center")
+        editor.text((420 + horizontal_shift + shadow_offset, 365 + shadow_offset), user, color=sombra, font=poppins_small, align="center")
+        editor.text((420 + horizontal_shift, 365), user, color=font_color, font=poppins_small, align="center")
 
-        editor.text((320 + horizontal_shift + shadow_offset, 350 + shadow_offset), txt2, color=sombra, font=poppins_small, align="center")
-        editor.text((320 + horizontal_shift, 350), txt2, color=font_color, font=poppins_small, align="center")
+        editor.text((420 + horizontal_shift + shadow_offset, 405 + shadow_offset), txt2, color=sombra, font=poppins_small, align="center")
+        editor.text((420 + horizontal_shift, 405), txt2, color=font_color, font=poppins_small, align="center")
 
         # Guardar la imagen en un buffer
         img_buffer = BytesIO()
