@@ -7,7 +7,7 @@ from urban.router import router as urban_router
 from name_combiner.router import router as name_combiner_router
 from cheems.router import router as cheems_router
 from traducir.router import router as traducir_router
-from bj.router import router as bj_router
+from ship.router import router as ship_router
 from tiempo.router import router as tiempo_router
 from img.router import router as img_router
 import uvicorn
@@ -26,9 +26,10 @@ app.include_router(urban_router, prefix="/urban", tags=["Urban"])
 app.include_router(name_combiner_router, prefix="/name_combiner", tags=["NameCombiner"])
 app.include_router(cheems_router, prefix="/cheems", tags=["Cheems"])
 app.include_router(traducir_router, prefix="/traducir", tags=["Traducir"])
-app.include_router(bj_router, prefix="/bj", tags=["Blackjack"])
+app.include_router(ship_router, prefix="/ship", tags=["Shipeo"])
 app.include_router(tiempo_router, prefix="/tiempo", tags=["Time"])
 app.include_router(img_router, prefix="/img", tags=["Imagenes"])
+app.include_router(gw_router, prefix="/gw", tags=["Sorteo"])
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
