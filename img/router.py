@@ -34,8 +34,8 @@ def get_custom_image(
         background_image = Editor(BytesIO(background_response.content)).resize((800, 400)).image  # Tamaño de la imagen de fondo
 
         # Cargar fuentes
-        poppins = Font.montserrat(size=60, variant="bold")  # Tamaño de la fuente
-        poppins_small = Font.montserrat(size=40, variant="regular")  # Tamaño de la fuente
+        poppins = Font.montserrat(size=55, variant="bold")  # Tamaño de la fuente
+        poppins_small = Font.montserrat(size=33, variant="regular")  # Tamaño de la fuente
 
         # Crear editor de imágenes
         editor = Editor(background_image)
