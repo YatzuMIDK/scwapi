@@ -68,7 +68,8 @@ def image(avatar1: str, avatar2: str, num: int = None, bg_url: str = None):
     round_rectangle(draw, [0, 0, rect_width, rect_height], rect_radius, fill=rect_color)
 
     # Pegar el rectángulo en la imagen de fondo
-    gen.paste(Editor(rectangle_img), (rect_x, rect_y), rectangle_img)
+    rectangle_mask = rectangle_img.split()[3]  # Usar el canal alfa como máscara
+    gen.paste(Editor(rectangle_img), (rect_x, rect_y), mask=rectangle_mask)
 
     # Agregar el corazón y el texto
     gen.paste(corazon, (330, 36))
