@@ -10,7 +10,7 @@ router = APIRouter()
 def get_custom_image(
     avatar: str,
     user: str,
-    background: str = Query(default="default_background_url"),  # Proporciona un valor predeterminado para el fondo
+    background: str = "https://iili.io/JyT6hnn.jpg",  # Proporciona un valor predeterminado para el fondo
     txt1: str = "BIENVENIDO",
     txt2: str = "Disfruta tu estancia en el servidor",
     font_color: str = "white",
