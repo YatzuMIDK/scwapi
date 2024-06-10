@@ -47,14 +47,14 @@ def get_custom_image(request: WelcomeCardRequest):
 
         # Añadir texto a la imagen con efecto de sombra
         shadow_offset = 3
-        editor.text((320 + horizontal_shift + shadow_offset, 260 + shadow_offset), request.ctx1, color=request.font_color, font=poppins, align="center")
-        editor.text((320 + horizontal_shift, 260), request.ctx1, color=request.font_color, font=poppins, align="center")
+        editor.text((320 + horizontal_shift + shadow_offset, 260 + shadow_offset), request.user, color=request.font_color, font=poppins, align="center")
+        editor.text((320 + horizontal_shift, 260), request.user, color=request.font_color, font=poppins, align="center")
 
-        editor.text((320 + horizontal_shift + shadow_offset, 315 + shadow_offset), request.ctx2, color=request.font_color, font=poppins_small, align="center")
-        editor.text((320 + horizontal_shift, 315), request.ctx2, color=request.font_color, font=poppins_small, align="center")
+        editor.text((320 + horizontal_shift + shadow_offset, 315 + shadow_offset), request.txt1, color=request.font_color, font=poppins_small, align="center")
+        editor.text((320 + horizontal_shift, 315), request.txt1, color=request.font_color, font=poppins_small, align="center")
 
-        editor.text((320 + horizontal_shift + shadow_offset, 350 + shadow_offset), request.ctx3, color=request.font_color, font=poppins_small, align="center")
-        editor.text((320 + horizontal_shift, 350), request.ctx3, color=request.font_color, font=poppins_small, align="center")
+        editor.text((320 + horizontal_shift + shadow_offset, 350 + shadow_offset), request.txt2, color=request.font_color, font=poppins_small, align="center")
+        editor.text((320 + horizontal_shift, 350), request.txt2, color=request.font_color, font=poppins_small, align="center")
 
         # Guardar la imagen en un buffer
         img_buffer = BytesIO()
