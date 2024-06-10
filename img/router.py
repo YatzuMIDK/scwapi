@@ -31,7 +31,7 @@ def get_custom_image(
         background_response = requests.get(background)
         if (background_response.status_code != 200):
             raise HTTPException(status_code=400, detail=f"Failed to download background image. Status code: {background_response.status_code}, Reason: {background_response.reason}")
-        background_image = Editor(BytesIO(background_response.content)).resize((1200, 600)).image  # Aumentar tamaño de la imagen de fondo
+        background_image = Editor(BytesIO(background_response.content)).resize((800, 400)).image  # Aumentar tamaño de la imagen de fondo
 
         # Cargar fuentes
         poppins = Font.montserrat(size=80, variant="bold")  # Aumentar tamaño de la fuente
