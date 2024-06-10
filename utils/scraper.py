@@ -1,9 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
+import urllib.parse
 
 def get_player_info(player_name: str) -> dict:
     base_url = "https://www.transfermarkt.com"
-    search_url = f"{base_url}/schnellsuche/ergebnis/schnellsuche?query={player_name}"
+    encoded_player_name = urllib.parse.quote(player_name)
+    search_url = f"{base_url}/schnellsuche/ergebnis/schnellsuche?query={encoded_player_name}"
     
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
@@ -11,6 +13,10 @@ def get_player_info(player_name: str) -> dict:
 
     response = requests.get(search_url, headers=headers)
     soup = BeautifulSoup(response.content, 'html.parser')
+
+    # Depuración: Imprimir el HTML de la página de resultados de búsqueda
+    print("HTML de la página de resultados de búsqueda:")
+    print(soup.prettify())
     
     try:
         player_link_tag = soup.find('a', {'class': 'spielprofil_tooltip'})
