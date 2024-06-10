@@ -8,10 +8,10 @@ router = APIRouter()
 @router.get("/")
 def image(avatar1: str, avatar2: str, num: int, bg_url: str = None):
 
-    if background_url is None:
+    if bg_url is None:
         background_path = "https://i.postimg.cc/KzJQfnpL/images-2024-06-07-T022236-205.jpg"
     else:
-        background_response = requests.get(background_url)
+        background_response = requests.get(bg_url)
         if background_response.status_code != 200:
             raise HTTPException(status_code=400, detail="Failed to download background image.")
         background_image = BytesIO(background_response.content)
@@ -33,7 +33,7 @@ def image(avatar1: str, avatar2: str, num: int, bg_url: str = None):
     corazon = Editor("img/cora.png").resize((240, 240))
 
     gen.paste(corazon, (330, 36))
-    gen.text((380, 110), f"{love}%", font=poppins, color="white")
+    gen.text((380, 110), f"{num}%", font=poppins, color="white")
     gen.paste(profile, (100, 50))
     gen.ellipse((100, 50), 200, 200, outline="red", stroke_width=4)
     gen.paste(profile_2, (600, 50))
