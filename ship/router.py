@@ -42,9 +42,9 @@ def image(avatar1: str, avatar2: str, num: int = None, bg_url: str = None):
     corazon = Editor("img/cora.png").resize((240, 240))
 
     # Dibujar el rectángulo con bordes circulares
-    rect_width, rect_height = 500, 150
-    rect_x, rect_y = (gen.image.width - rect_width) // 2, 125
-    rect_color = (0, 0, 0, 150)  # Color negro semi-transparente
+    rect_width, rect_height = 700, 200  # Ajustar el tamaño del rectángulo
+    rect_x, rect_y = 100, 50  # Posición debajo de los avatares y el corazón
+    rect_color = (0, 0, 0, 180)  # Color negro más oscuro semi-transparente
     rect_radius = 30
 
     # Crear una nueva imagen para el rectángulo con bordes redondeados
