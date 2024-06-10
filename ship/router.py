@@ -39,7 +39,7 @@ def image(avatar1: str, avatar2: str, num: int = None, bg_url: str = None):
     profile_2 = Editor(BytesIO(avatar_response_2.content)).resize((200, 200)).circle_image()
 
     # Corazón
-    corazon = Editor("img/cora.png").resize((240, 260))
+    corazon = Editor("img/heart.png").resize((240, 240))
 
     # Dibujar el rectángulo con bordes circulares
     rect_width, rect_height = 750, 250  # Ajustar el tamaño del rectángulo
