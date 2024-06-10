@@ -45,7 +45,7 @@ def get_custom_image(
         editor.ellipse((250 + horizontal_shift, 90), 150, 150, outline=circle_color, stroke_width=5)
 
         # Añadir texto a la imagen con efecto de sombra
-        shadow_offset = 5
+        shadow_offset = 2
         editor.text((320 + horizontal_shift + shadow_offset, 260 + shadow_offset), txt1, color=sombra, font=poppins, align="center")
         editor.text((320 + horizontal_shift, 260), txt1, color=font_color, font=poppins, align="center")
 
