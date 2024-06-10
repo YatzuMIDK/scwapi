@@ -23,40 +23,45 @@ def get_custom_image(
     try:
         # Descargar la imagen del avatar
         avatar_response = requests.get(avatar)
-        if (avatar_response.status_code != 200):
+        if avatar_response.status_code != 200:
             raise HTTPException(status_code=400, detail="Failed to download avatar image.")
-        avatar_image = Editor(BytesIO(avatar_response.content)).resize((600, 600)).circle_image()  # Aumentar tamaño del avatar
+        avatar_image = Editor(BytesIO(avatar_response.content)).resize((200, 200)).circle_image()  # Tamaño del avatar
 
         # Descargar la imagen de fondo
         background_response = requests.get(background)
-        if (background_response.status_code != 200):
+        if background_response.status_code != 200:
             raise HTTPException(status_code=400, detail=f"Failed to download background image. Status code: {background_response.status_code}, Reason: {background_response.reason}")
-        background_image = Editor(BytesIO(background_response.content)).resize((800, 400)).image  # Aumentar tamaño de la imagen de fondo
+        background_image = Editor(BytesIO(background_response.content)).resize((800, 400)).image  # Tamaño de la imagen de fondo
 
         # Cargar fuentes
-        poppins = Font.montserrat(size=80, variant="bold")  # Aumentar tamaño de la fuente
-        poppins_small = Font.montserrat(size=50, variant="regular")  # Aumentar tamaño de la fuente
-
-        # Desplazamiento horizontal para centrar el contenido
-        horizontal_shift = 63
+        poppins = Font.montserrat(size=60, variant="bold")  # Tamaño de la fuente
+        poppins_small = Font.montserrat(size=40, variant="regular")  # Tamaño de la fuente
 
         # Crear editor de imágenes
         editor = Editor(background_image)
 
+        # Coordenadas centradas
+        avatar_x = (800 - 200) // 2
+        avatar_y = 50
+        text_x = 400
+        text_y1 = 270
+        text_y2 = 320
+        text_y3 = 370
+
         # Pegar el avatar en la imagen de fondo
-        editor.paste(avatar_image.image, (750 + horizontal_shift, 100))  # Ajustar coordenadas
-        editor.ellipse((750 + horizontal_shift, 100), 600, 600, outline=circle_color, stroke_width=10)  # Aumentar tamaño del círculo
+        editor.paste(avatar_image.image, (avatar_x, avatar_y))  # Centrar avatar
+        editor.ellipse((avatar_x, avatar_y), 200, 200, outline=circle_color, stroke_width=8)  # Círculo alrededor del avatar
 
         # Añadir texto a la imagen con efecto de sombra
         shadow_offset = 3
-        editor.text((750 + horizontal_shift + shadow_offset, 550 + shadow_offset), txt1, color=sombra, font=poppins, align="center")
-        editor.text((750 + horizontal_shift, 450), txt1, color=font_color, font=poppins, align="center")
+        editor.text((text_x + shadow_offset, text_y1 + shadow_offset), txt1, color=sombra, font=poppins, align="center", anchor="mm")
+        editor.text((text_x, text_y1), txt1, color=font_color, font=poppins, align="center", anchor="mm")
 
-        editor.text((750 + horizontal_shift + shadow_offset, 550 + shadow_offset), user, color=sombra, font=poppins_small, align="center")
-        editor.text((750 + horizontal_shift, 550), user, color=font_color, font=poppins_small, align="center")
+        editor.text((text_x + shadow_offset, text_y2 + shadow_offset), user, color=sombra, font=poppins_small, align="center", anchor="mm")
+        editor.text((text_x, text_y2), user, color=font_color, font=poppins_small, align="center", anchor="mm")
 
-        editor.text((600 + horizontal_shift + shadow_offset, 620 + shadow_offset), txt2, color=sombra, font=poppins_small, align="center")
-        editor.text((600 + horizontal_shift, 620), txt2, color=font_color, font=poppins_small, align="center")
+        editor.text((text_x + shadow_offset, text_y3 + shadow_offset), txt2, color=sombra, font=poppins_small, align="center", anchor="mm")
+        editor.text((text_x, text_y3), txt2, color=font_color, font=poppins_small, align="center", anchor="mm")
 
         # Guardar la imagen en un buffer
         img_buffer = BytesIO()
