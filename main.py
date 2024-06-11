@@ -11,7 +11,7 @@ from ship.router import router as ship_router
 from tiempo.router import router as tiempo_router
 from img.router import router as img_router
 from gw.router import router as gw_router
-from pvp.router import app as pvp_router 
+from pvp.router import router as pvp_router 
 import uvicorn
 import time
 import psutil
