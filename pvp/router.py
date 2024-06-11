@@ -14,10 +14,10 @@ class Game(BaseModel):
     status: str = None
 
 moves = {
-    "Puñetazo": {"probability": 0.1, "damage": 20},
-    "Corte superior": {"probability": 0.2, "damage": 30},
-    "Patada baja": {"probability": 0.15, "damage": 25},
-    "Super golpe": {"probability": 0.05, "damage": 40},
+    "Puñetazo": {"probability": 0.5, "damage": 20},
+    "Corte superior": {"probability": 0.3, "damage": 30},
+    "Patada baja": {"probability": 0.4, "damage": 25},
+    "Super golpe": {"probability": 0.2, "damage": 40},
     "Cabezazo": {"probability": 0.1, "damage": 35}
 }
 
@@ -30,7 +30,7 @@ def attack(player_move: str) -> int:
     else:
         return 0
 
-@router.post("/start_game")
+@router.post("/start")
 async def start_game():
     game_id = random.randint(1, 1000)  # Generar un ID de juego aleatorio
     return {"game_id": game_id}
