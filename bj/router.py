@@ -45,7 +45,7 @@ def board_to_discord_format(board):
         discord_board += "\n"
     return discord_board
 
-@router.post("/minas")
+@router.post("/")
 def generate_minesweeper(request: MinesweeperRequest):
     rows, cols, bombs = request.rows, request.cols, request.bombs
     if rows <= 0 or cols <= 0 or bombs <= 0 or bombs >= rows * cols:
