@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 import random
 
@@ -63,12 +63,11 @@ def board_to_discord_format(board):
         discord_board += "\n"
     return discord_board
 
-@router.post("/")
-def generate_minesweeper(request: MinesweeperRequest):
-    rows, cols, bombs = request.rows, request.cols, request.bombs
-    if rows <= 0 or cols <= 0 or bombs <= 0 or bombs >= rows * cols:
-        raise HTTPException(status_code=400, detail="Invalid board dimensions or number of bombs")
-    
+@router.get("/")
+def generate_minesweeper(rows: int = Query(..., ge=1), cols: int = Query(..., ge=1), bombs: int = Query(..., ge=1)):
+    if bombs >= rows * cols:
+        raise HTTPException(status_code=400, detail="Number of bombs must be less than total number of cells")
+
     board = generate_minesweeper_board(rows, cols, bombs)
     discord_board = board_to_discord_format(board)
     
