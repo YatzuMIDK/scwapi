@@ -331,13 +331,13 @@ async def play_seven_eleven():
     )
 
 # Modelos y endpoint para apostar en un partido de fútbol
-class FootballBet:
+class FootballBet(BaseModel):
     home_team: str
     away_team: str
     bet_amount: float
     bet_type: str
 
-class FootballMatchResult:
+class FootballMatchResult(BaseModel):
     first_half: str
     first_half_goals: list
     second_half: str
