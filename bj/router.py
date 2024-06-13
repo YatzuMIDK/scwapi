@@ -28,9 +28,27 @@ def generate_minesweeper_board(rows: int, cols: int, bombs: int):
         for dr, dc in directions:
             nr, nc = r + dr, c + dc
             if 0 <= nr < rows and 0 <= nc < cols and board[nr][nc] != '💣':
-                board[nr][nc] += 1
-                
+                if isinstance(board[nr][nc], int):  # Verifica si es un número entero
+                    board[nr][nc] += 1
+                else:
+                    board[nr][nc] = 1  # Inicializa a 1 si es una cadena '💣'
+
     return board
+
+def number_to_words(num):
+    words = {
+        0: ":zero:",
+        1: ":one:",
+        2: ":two:",
+        3: ":three:",
+        4: ":four:",
+        5: ":five:",
+        6: ":six:",
+        7: ":seven:",
+        8: ":eight:",
+        9: ":nine:"
+    }
+    return words.get(num, str(num))  # Devuelve la palabra correspondiente o el número como cadena
 
 def board_to_discord_format(board):
     discord_board = ""
@@ -41,7 +59,7 @@ def board_to_discord_format(board):
             elif cell == 0:
                 discord_board += "||:white_large_square:||"
             else:
-                discord_board += f"||:{cell}:||"
+                discord_board += f"||{number_to_words(cell)}||"
         discord_board += "\n"
     return discord_board
 
