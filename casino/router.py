@@ -348,13 +348,15 @@ class FootballMatchResult:
     bet_amount: float
     won: bool
 
-@router.post("/football_match/bet", response_model=FootballMatchResult)
+# Endpoint para realizar una apuesta de fútbol
+@router.post("/football_match/bet")
 async def place_football_bet(bet: FootballBet):
     if bet.bet_amount <= 0:
         raise HTTPException(status_code=400, detail="Bet amount must be greater than zero.")
     if bet.bet_type not in ["local", "visitante", "empate"]:
         raise HTTPException(status_code=400, detail="Invalid bet type. It must be 'local', 'visitante' or 'empate'.")
 
+    # Lógica para simular el resultado de un partido de fútbol
     home_goals_first_half = random.randint(0, 3)
     away_goals_first_half = random.randint(0, 3)
     home_goals_second_half = random.randint(0, 3)
@@ -363,36 +365,11 @@ async def place_football_bet(bet: FootballBet):
     home_goals_total = home_goals_first_half + home_goals_second_half
     away_goals_total = away_goals_first_half + away_goals_second_half
 
-    # Generar minutos aleatorios únicos para los goles
-    first_half_goal_minutes = random.sample(range(1, 46), home_goals_first_half + away_goals_first_half)
-    second_half_goal_minutes = random.sample(range(46, 91), home_goals_second_half + away_goals_second_half)
-
-    first_half_goals = []
-    second_half_goals = []
-    goal_index = 0
-
-    # Asignar minutos a los goles de la primera mitad
-    for _ in range(home_goals_first_half):
-        minute = first_half_goal_minutes[goal_index]
-        first_half_goals.append(f"Min {minute}: {bet.home_team}")
-        goal_index += 1
-    for _ in range(away_goals_first_half):
-        minute = first_half_goal_minutes[goal_index]
-        first_half_goals.append(f"Min {minute}: {bet.away_team}")
-        goal_index += 1
-
-    goal_index = 0
-
-    # Asignar minutos a los goles de la segunda mitad
-    for _ in range(home_goals_second_half):
-        minute = second_half_goal_minutes[goal_index]
-        second_half_goals.append(f"Min {minute}: {bet.home_team}")
-        goal_index += 1
-    for _ in range(away_goals_second_half):
-        minute = second_half_goal_minutes[goal_index]
-        second_half_goals.append(f"Min {minute}: {bet.away_team}")
-        goal_index += 1
-
+    first_half_goals = [f"Min {random.randint(1, 45)}: {bet.home_team} {home_goals_first_half}",
+                        f"Min {random.randint(1, 45)}: {bet.away_team} {away_goals_first_half}"]
+    second_half_goals = [f"Min {random.randint(46, 90)}: {bet.home_team} {home_goals_second_half}",
+                         f"Min {random.randint(46, 90)}: {bet.away_team} {away_goals_second_half}"]
+    
     final_goals = first_half_goals + second_half_goals
 
     winning_team = "Empate"
@@ -407,14 +384,14 @@ async def place_football_bet(bet: FootballBet):
        (bet.bet_type == "empate" and winning_team == "Empate"):
         won = True
 
-    return FootballMatchResult(
-        first_half=f"{bet.home_team} {home_goals_first_half} - {away_goals_first_half} {bet.away_team}",
-        first_half_goals=first_half_goals,
-        second_half=f"{bet.home_team} {home_goals_second_half} - {away_goals_second_half} {bet.away_team}",
-        second_half_goals=second_half_goals,
-        final_score=f"{bet.home_team} {home_goals_total} - {away_goals_total} {bet.away_team}",
-        final_goals=final_goals,
-        winning_team=winning_team,
-        bet_amount=bet.bet_amount,
-        won=won
-    )
+    return {
+        "first_half": f"{bet.home_team} {home_goals_first_half} - {away_goals_first_half} {bet.away_team}",
+        "first_half_goals": first_half_goals,
+        "second_half": f"{bet.home_team} {home_goals_second_half} - {away_goals_second_half} {bet.away_team}",
+        "second_half_goals": second_half_goals,
+        "final_score": f"{bet.home_team} {home_goals_total} - {away_goals_total} {bet.away_team}",
+        "final_goals": final_goals,
+        "winning_team": winning_team,
+        "bet_amount": bet.bet_amount,
+        "won": won
+    }
