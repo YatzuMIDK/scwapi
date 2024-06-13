@@ -331,19 +331,19 @@ async def play_seven_eleven():
     )
 
 # Modelos y endpoint para apostar en un partido de fútbol
-class FootballBet(BaseModel):
+class FootballBet:
     home_team: str
     away_team: str
     bet_amount: float
-    bet_type: str  # "local", "visitante" o "empate"
+    bet_type: str
 
-class FootballMatchResult(BaseModel):
+class FootballMatchResult:
     first_half: str
-    first_half_goals: List[str]
+    first_half_goals: list
     second_half: str
-    second_half_goals: List[str]
+    second_half_goals: list
     final_score: str
-    final_goals: List[str]
+    final_goals: list
     winning_team: str
     bet_amount: float
     won: bool
@@ -363,11 +363,36 @@ async def place_football_bet(bet: FootballBet):
     home_goals_total = home_goals_first_half + home_goals_second_half
     away_goals_total = away_goals_first_half + away_goals_second_half
 
-    first_half_goals = [f"Min {random.randint(1, 45)}: {bet.home_team} {home_goals_first_half}",
-                        f"Min {random.randint(1, 45)}: {bet.away_team} {away_goals_first_half}"]
-    second_half_goals = [f"Min {random.randint(46, 90)}: {bet.home_team} {home_goals_second_half}",
-                         f"Min {random.randint(46, 90)}: {bet.away_team} {away_goals_second_half}"]
-    
+    # Generar minutos aleatorios únicos para los goles
+    first_half_goal_minutes = random.sample(range(1, 46), home_goals_first_half + away_goals_first_half)
+    second_half_goal_minutes = random.sample(range(46, 91), home_goals_second_half + away_goals_second_half)
+
+    first_half_goals = []
+    second_half_goals = []
+    goal_index = 0
+
+    # Asignar minutos a los goles de la primera mitad
+    for _ in range(home_goals_first_half):
+        minute = first_half_goal_minutes[goal_index]
+        first_half_goals.append(f"Min {minute}: {bet.home_team}")
+        goal_index += 1
+    for _ in range(away_goals_first_half):
+        minute = first_half_goal_minutes[goal_index]
+        first_half_goals.append(f"Min {minute}: {bet.away_team}")
+        goal_index += 1
+
+    goal_index = 0
+
+    # Asignar minutos a los goles de la segunda mitad
+    for _ in range(home_goals_second_half):
+        minute = second_half_goal_minutes[goal_index]
+        second_half_goals.append(f"Min {minute}: {bet.home_team}")
+        goal_index += 1
+    for _ in range(away_goals_second_half):
+        minute = second_half_goal_minutes[goal_index]
+        second_half_goals.append(f"Min {minute}: {bet.away_team}")
+        goal_index += 1
+
     final_goals = first_half_goals + second_half_goals
 
     winning_team = "Empate"
