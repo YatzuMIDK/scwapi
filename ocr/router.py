@@ -1,6 +1,7 @@
-# combate/router.py
+# router.py
+
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Optional
 import random
 
 router = APIRouter()
@@ -15,16 +16,31 @@ class Jugador(BaseModel):
     balas_9mm: int  # Cantidad de balas de calibre 9mm
     balas_556mm: int  # Cantidad de balas de calibre 5.56mm
 
+    @property
+    def tipo_municion(self) -> Optional[str]:
+        if self.tipo_arma == 1:
+            return ".45c"
+        elif self.tipo_arma == 2:
+            return "9mm"
+        elif self.tipo_arma == 3:
+            return "5.56mm"
+        else:
+            return None
+
 # Ruta para el combate
 @router.post("/")
 async def combatir(jugador_atacante: Jugador, jugador_atacado: Jugador):
     # Validar si el jugador atacante tiene balas para el tipo de arma que posee
-    if jugador_atacante.tipo_arma != 0 and jugador_atacante.balas_45c == 0 and jugador_atacante.balas_9mm == 0 and jugador_atacante.balas_556mm == 0:
-        raise HTTPException(status_code=400, detail=f"{jugador_atacante.nombre} no tiene balas para su arma y no puede atacar.")
+    tipo_municion = jugador_atacante.tipo_municion
+    if tipo_municion:
+        if getattr(jugador_atacante, f"balas_{tipo_municion.replace('.', '')}") == 0:
+            raise HTTPException(status_code=400, detail=f"{jugador_atacante.nombre} no tiene balas de {tipo_municion} y no puede atacar.")
 
     # Validar si el jugador atacado tiene balas para el tipo de arma que posee
-    if jugador_atacado.tipo_arma != 0 and jugador_atacado.balas_45c == 0 and jugador_atacado.balas_9mm == 0 and jugador_atacado.balas_556mm == 0:
-        raise HTTPException(status_code=400, detail=f"{jugador_atacado.nombre} no tiene balas para su arma y no puede atacar.")
+    tipo_municion_atacado = jugador_atacado.tipo_municion
+    if tipo_municion_atacado:
+        if getattr(jugador_atacado, f"balas_{tipo_municion_atacado.replace('.', '')}") == 0:
+            raise HTTPException(status_code=400, detail=f"{jugador_atacado.nombre} no tiene balas de {tipo_municion_atacado} y no puede atacar.")
 
     # Simular la probabilidad de éxito del ataque del jugador atacante
     probabilidad_exito = jugador_atacante.tiro / 100.0
@@ -42,16 +58,10 @@ async def combatir(jugador_atacante: Jugador, jugador_atacado: Jugador):
             if random.random() <= probabilidad_reaccion:
                 # El jugador atacado realiza un contraataque
                 tipo_arma_atacado = jugador_atacado.tipo_arma
-                if tipo_arma_atacado == 1:
-                    # Pistolas
-                    jugador_atacado.balas_9mm -= 1
-                elif tipo_arma_atacado == 2:
-                    # Subfusiles
-                    jugador_atacado.balas_9mm -= 1
-                    jugador_atacado.balas_45c -= 1
-                elif tipo_arma_atacado == 3:
-                    # Rifles de asalto
-                    jugador_atacado.balas_556mm -= 1
+                tipo_municion_atacado = jugador_atacado.tipo_municion
+
+                if tipo_municion_atacado:
+                    getattr(jugador_atacado, f"balas_{tipo_municion_atacado.replace('.', '')}") -= 1
 
                 probabilidad_exito_contraataque = jugador_atacado.tiro / 100.0
                 if random.random() <= probabilidad_exito_contraataque:
@@ -71,4 +81,4 @@ async def combatir(jugador_atacante: Jugador, jugador_atacado: Jugador):
         "mensaje": mensaje,
         "jugador_atacante": jugador_atacante.dict(),
         "jugador_atacado": jugador_atacado.dict()
-            }
+                                                      }
