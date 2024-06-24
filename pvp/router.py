@@ -1,76 +1,58 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from typing import List
 import random
 
 router = APIRouter()
 
-class Game(BaseModel):
-    game_id: int
-    player_health: int = 200
-    machine_health: int = 200
-    winner: str = None
-    player_move: str = None
-    machine_move: str = None
-    status: str = None
+class Car(BaseModel):
+    name: str
 
-class AttackMove(BaseModel):
-    player_move: str
+class RaceRequest(BaseModel):
+    cars: List[Car]
+    entry_fee: float
+    user_car_name: str
+    win_probability: float  # Probabilidad de ganar para el auto del usuario (0 a 1)
 
-moves = {
-    "Puñetazo": {"probability": 0.6, "damage": 20},
-    "Corte superior": {"probability": 0.4, "damage": 30},
-    "Patada baja": {"probability": 0.5, "damage": 25},
-    "Super golpe": {"probability": 0.2, "damage": 40},
-    "Cabezazo": {"probability": 0.3, "damage": 35}
-}
+class RaceResponse(BaseModel):
+    race: str
+    prize: float
+    position: int
 
-def attack(player_move: str) -> int:
-    if player_move not in moves:
-        raise HTTPException(status_code=400, detail="Movimiento no válido")
+@router.post("/start-race", response_model=RaceResponse)
+async def start_race(race_request: RaceRequest):
+    if len(race_request.cars) != 8:
+        raise HTTPException(status_code=400, detail="The race must have exactly 8 cars.")
+    if not (0 <= race_request.win_probability <= 1):
+        raise HTTPException(status_code=400, detail="Win probability must be between 0 and 1.")
+    
+    # Simulate race times for each car
+    race_times = {car.name: random.uniform(10.0, 20.0) for car in race_request.cars}
 
-    if random.random() < moves[player_move]["probability"]:
-        return moves[player_move]["damage"]
-    else:
-        return 0
+    # Adjust race time for the user's car based on win probability
+    if random.random() <= race_request.win_probability:
+        race_times[race_request.user_car_name] = min(race_times.values()) - random.uniform(0.1, 1.0)  # Ensure it's the fastest
 
-@router.post("/start")
-async def start_game():
-    game_id = random.randint(1, 1000)  # Generar un ID de juego aleatorio
-    return {"game_id": game_id}
+    # Sort the cars based on their race times
+    sorted_cars = sorted(race_request.cars, key=lambda car: race_times[car.name])
 
-@router.post("/fight/{game_id}")
-async def player_attack(game_id: int, attack_move: AttackMove):
-    game = Game(game_id=game_id)
-    game.player_move = attack_move.player_move
-    damage = attack(attack_move.player_move)
+    # Assign positions and calculate prizes
+    prize_pool = race_request.entry_fee * 8
+    prize_distribution = [0.5, 0.25, 0.15, 0.10]  # Distribution of prize pool
 
-    game.machine_move = random.choice(list(moves.keys()))
-    machine_damage = attack(game.machine_move)
+    total_prize = 0
+    user_position = 0
 
-    game.machine_health -= damage
-    game.player_health -= machine_damage
+    positions_str = "Tabla de posiciones:\n"
 
-    if game.machine_health <= 0:
-        game.winner = "Jugador"
-        game.status = f"¡La máquina ha perdido! Ganaste con {game.player_health} de salud restante."
-    elif game.player_health <= 0:
-        game.winner = "Máquina"
-        game.status = f"¡El jugador ha perdido! La máquina gana con {game.machine_health} de salud restante."
-    else:
-        game.status = f"El jugador usó {attack_move.player_move} y {game.machine_move} la máquina. Salud del jugador: {game.player_health}, Salud del bot: {game.machine_health}"
+    for i, car in enumerate(sorted_cars):
+        position = i + 1
+        race_time = race_times[car.name]
+        positions_str += f"{position}. {car.name} - {race_time:.2f} seg\n"
 
-    return game
+        if car.name == race_request.user_car_name:
+            user_position = position
+            if position <= 4:
+                total_prize = prize_pool * prize_distribution[position - 1]
 
-@router.get("/game_info/{game_id}")
-async def get_game_info(game_id: int):
-    # Aquí deberías tener una lógica para recuperar el estado del juego del almacenamiento de datos
-    # Por ahora, simplemente devolvemos un juego ficticio
-    return {
-        "game_id": game_id,
-        "player_health": 200,
-        "machine_health": 200,
-        "winner": None,
-        "player_move": "Puñetazo",
-        "machine_move": "Corte superior",
-        "status": "La partida está en curso..."
-    }
+    return RaceResponse(race=positions_str, prize=total_prize, position=user_position)
