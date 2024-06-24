@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from datetime import datetime
-from ocr.rluter import router as ocr_router
+from ocr.router import router as ocr_router
 from casino.router import router as casino_router
 from steam.router import router as steam_router
 from urban.router import router as urban_router
