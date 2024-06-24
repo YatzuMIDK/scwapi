@@ -12,7 +12,7 @@ from tiempo.router import router as tiempo_router
 from img.router import router as img_router
 from gw.router import router as gw_router
 from bj.router import router as bj_router 
-from ocr.router import router as ocr_router
+from pvp.router import router as pvp_router
 import uvicorn
 import time
 import psutil
@@ -34,7 +34,7 @@ app.include_router(tiempo_router, prefix="/tiempo", tags=["Time"])
 app.include_router(img_router, prefix="/img", tags=["Imagenes"])
 app.include_router(gw_router, prefix="/gw", tags=["Sorteo"])
 app.include_router(bj_router, prefix="/buscaminas", tags=["Putazos"])
-app.include_router(ocr_router, prefix="/ocr", tags=["ITT"])
+app.include_router(pvp_router, prefix="/race", tags=["Carrera"])
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     start_time = time.time()
