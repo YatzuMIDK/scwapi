@@ -1,6 +1,6 @@
 # combate/router.py
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Optional
+from pydantic import BaseModel
 import random
 
 router = APIRouter()
@@ -11,9 +11,9 @@ class Jugador(BaseModel):
     tiro: int
     reflejos: float
     tipo_arma: int  # 0: desarmado, 1: pistolas, 2: subfusiles, 3: rifles de asalto, 4: francotirador, 5: arma cuerpo a cuerpo
-    balas_45c: Optional[int] = 0  # Cantidad de balas de calibre .45c
-    balas_9mm: Optional[int] = 0  # Cantidad de balas de calibre 9mm
-    balas_556mm: Optional[int] = 0  # Cantidad de balas de calibre 5.56mm
+    balas_45c: int  # Cantidad de balas de calibre .45c
+    balas_9mm: int  # Cantidad de balas de calibre 9mm
+    balas_556mm: int  # Cantidad de balas de calibre 5.56mm
 
 # Ruta para el combate
 @router.post("/")
