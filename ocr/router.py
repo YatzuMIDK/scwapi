@@ -1,5 +1,6 @@
 # combate/router.py
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Optional
 import random
 
 router = APIRouter()
