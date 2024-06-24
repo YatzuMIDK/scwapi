@@ -19,7 +19,7 @@ class RaceResponse(BaseModel):
     prize: float
     position: int
 
-@router.post("/start-race", response_model=RaceResponse)
+@router.post("/", response_model=RaceResponse)
 async def start_race(race_request: RaceRequest):
     if len(race_request.cars) != 8:
         raise HTTPException(status_code=400, detail="The race must have exactly 8 cars.")
